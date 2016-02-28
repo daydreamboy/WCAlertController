@@ -1,5 +1,5 @@
 //
-//  WCViewController.h
+//  WCAppDelegate.h
 //  WCAlertController
 //
 //  Created by wesley_chen on 02/24/2016.
@@ -8,6 +8,8 @@
 
 @import UIKit;
 
-@interface WCViewController : UIViewController
+@interface AppDelegate : UIResponder <UIApplicationDelegate>
+
+@property (strong, nonatomic) UIWindow *window;
 
 @end
