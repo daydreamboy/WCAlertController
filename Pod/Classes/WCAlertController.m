@@ -198,14 +198,7 @@
     }
 
     if (_maskViewBlurred) {
-                _maskView.layer.contents = (id)_blurImage.CGImage;
-        /*
-        UIImageView *imageView = [[UIImageView alloc] initWithFrame:_maskView.bounds];
-        imageView.image = _blurImage;
-                [_maskView addSubview:imageView];
-        _maskView.backgroundColor = [UIColor darkGrayColor];
-         */
-//        [self.view addSubview:imageView];
+        _maskView.layer.contents = (id)_blurredImage.CGImage;
     }
     else {
         _maskView.layer.contents = nil;
