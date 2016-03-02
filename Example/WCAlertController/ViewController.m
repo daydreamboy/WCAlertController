@@ -206,9 +206,9 @@
                 }
             }
         }];
-        alert.maskViewColor = [UIColor yellowColor];
-        alert.maskViewBlurred = YES;
-//        alert.showDuration = 7;//0.3;
+//        alert.maskViewColor = [[UIColor yellowColor] colorWithAlphaComponent:0.3];
+//        alert.maskViewBlurred = YES;
+        alert.showDuration = 7;//0.3;
 //        alert.dismissDuration = 7;//0.2;
 
         _alert1 = alert;

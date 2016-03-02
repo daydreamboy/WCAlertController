@@ -140,6 +140,20 @@
     }
 }
 
+- (void)setMaskViewColor:(UIColor *)maskViewColor {
+    
+    if (maskViewColor) {
+        const CGFloat alpha = 0.6f;
+        
+        UIColor *appliedColor = maskViewColor;
+        if (CGColorGetAlpha(maskViewColor.CGColor) == 1.0f) {
+            appliedColor = [maskViewColor colorWithAlphaComponent:alpha];
+        }
+        
+        _maskViewColor = appliedColor;
+    }
+}
+
 #pragma mark Getters
 
 - (UIViewController *)standOnViewController {
@@ -179,8 +193,7 @@
     _containerView = [[WCAlertContainerView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
     _containerView.backgroundColor = [UIColor clearColor];
 
-    _maskViewAlpha = 0.6;
-    _maskViewColor = [UIColor darkGrayColor];
+    self.maskViewColor = [UIColor darkGrayColor];
     _showDuration = 0.25;
     _dismissDuration = 0.25;
 
@@ -248,7 +261,6 @@
 - (void)layoutAllViews {
     UIView *contentView = _contentViewController.view;
 
-//    contentView.autoresizingMask = UIViewAutoresizingNone;
     if ([_contentViewController isKindOfClass:[UINavigationController class]]) {
         NSArray *viewControllers = [(UINavigationController *)_contentViewController viewControllers];
         UIViewController *rootViewController;
@@ -300,9 +312,7 @@
 }
 
 - (NSArray *)animatorsForShow {
-    CGFloat maskViewAlpha = _maskViewBlurred ? 1.0 : _maskViewBlurred;
-
-    CABasicAnimation *animationForMaskView = [CAAnimationHelper opacityAnimationWithStartAlpha:0.0 endAlpha:maskViewAlpha];
+    CABasicAnimation *animationForMaskView = [CAAnimationHelper opacityAnimationWithStartAlpha:0.0 endAlpha:1.0];
     CAAnimation *animationProvided = [_animator animationsForShow];
 
     animationForMaskView.duration = _showDuration;
@@ -312,9 +322,7 @@
 }
 
 - (NSArray *)animatorsForDismiss {
-    CGFloat maskViewAlpha = _maskViewBlurred ? 1.0 : _maskViewBlurred;
-
-    CABasicAnimation *animationForMaskView = [CAAnimationHelper opacityAnimationWithStartAlpha:maskViewAlpha endAlpha:0.0];
+    CABasicAnimation *animationForMaskView = [CAAnimationHelper opacityAnimationWithStartAlpha:1.0 endAlpha:0.0];
     CAAnimation *animationProvided = [_animator animationsForDismiss];
 
     animationForMaskView.duration = _dismissDuration;
@@ -332,7 +340,7 @@
     [_contentViewController beginAppearanceTransition:YES animated:YES];
 
     _maskView.backgroundColor = _maskViewColor;
-    _maskView.alpha = _maskViewBlurred ? 1.0 : _maskViewAlpha;
+    _maskView.alpha = 1.0;
     _containerView.alpha = 1.0;
 
     [CAAnimationHelper animationWithLayers:animatedLayers
@@ -355,7 +363,7 @@
     [_contentViewController beginAppearanceTransition:YES animated:YES];
 
     _maskView.backgroundColor = _maskViewColor;
-    _maskView.alpha = _maskViewBlurred ? 1.0 : _maskViewAlpha;
+    _maskView.alpha = 1.0f;
     _containerView.alpha = 1.0;
 
     [_contentViewController didMoveToParentViewController:self];

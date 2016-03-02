@@ -36,7 +36,9 @@
 
 #pragma mark MaskView properties
 
-@property (nonatomic, assign) CGFloat maskViewAlpha;
+/**
+ *  Set the color with alpha < 1. If not, set its alpha to 0.6
+ */
 @property (nonatomic, strong) UIColor *maskViewColor;
 @property (nonatomic, assign) BOOL modal;
 

@@ -10,9 +10,6 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
 
-// The recommended time for animation
-#define kAnimationDuration 0.3
-
 @class CABasicAnimation;
 
 @interface CAAnimationHelper : NSObject
