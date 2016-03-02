@@ -2,27 +2,28 @@
 //  RootViewController.m
 //  WCAlertController
 //
-//  Created by wesley chen on 16/2/29.
+//  Created by wesley chen on 16/2/24.
 //  Copyright © 2016年 wesley_chen. All rights reserved.
 //
 
-#import "RootViewController.h"
-
+#import "NavRootViewController.h"
 #import "SecondViewController.h"
 #import <WCAlertController/WCAlertController.h>
 
-@interface RootViewController ()
+@interface NavRootViewController ()
 @property (nonatomic, strong) UIButton *buttonPush;
 @end
 
-@implementation RootViewController
+@implementation NavRootViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     NSLog(@"_cmd: %@, %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
     
     self.view.backgroundColor = [UIColor greenColor];
+    self.view.frame = CGRectMake(0, 0, 200, 300);
+    self.view.layer.cornerRadius = 5;
+    self.view.clipsToBounds = YES;
     
     CGSize viewSize = self.view.frame.size;
     
@@ -36,6 +37,8 @@
     
     UIBarButtonItem *rightBarItem = [[UIBarButtonItem alloc] initWithTitle:@"Dismiss Me" style:UIBarButtonItemStyleDone target:self action:@selector(barItemClicked:)];
     self.navigationItem.rightBarButtonItem = rightBarItem;
+    
+//    self.navigationController.navigationBar.translucent = NO;
 }
 
 #pragma mark - Actions
@@ -67,6 +70,8 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     NSLog(@"_cmd: %@, %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    
+//        self.navigationController.navigationBar.translucent = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

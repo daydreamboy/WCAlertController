@@ -8,10 +8,14 @@
 
 #import "WCAlertController.h"
 
+#import <Accelerate/Accelerate.h>
+
 #import <WCAlertController/WCAlertMaskView.h>
 #import <WCAlertController/WCAlertContainerView.h>
 #import <WCAlertController/WCAlertControllerMacro.h>
 #import <WCAlertController/CAAnimationHelper.h>
+#import <WCAlertController/UIView+Snapshot.h>
+#import <WCAlertController/UIImageHelper.h>
 
 #import <WCAlertController/WCAlertAnimator.h>
 #import <WCAlertController/WCAlertAnimatorSystem.h>
@@ -27,6 +31,8 @@
     BOOL _dismissAnimated;
 
     WCAlertController *_retainedSelf;
+
+    UIImage *_blurredImage;
 }
 
 @property (nonatomic, strong, readwrite) UIViewController *contentViewController;
@@ -82,10 +88,17 @@
         _presented = YES;
         _showAnimated = animated;
 
+        UIImage *snapshot = [[UIApplication sharedApplication].keyWindow captureScreenshot];
+//        _blurImage = [snapshot blurredImageWithRadius:8.0
+//                                           iterations:8.0
+//                                            tintColor:[[UIColor blueColor] colorWithAlphaComponent:0.8]];//[UIColor colorWithWhite:.0 alpha:0.2]];
+
+        _blurredImage = [UIImageHelper blurredImageWithImage:snapshot imageBlurStyle:WCImageBlurStyleOriginal];
+//        _blurImage = [UIImageHelper blurredImageWithImage:snapshot tintColor:[UIColor yellowColor] maskColor:[UIColor greenColor]];
+        
         [self presentOverlapWindowIfNeeded];
         [self addMaskView];
         [self addContainerView];
-//        [self addContentView];
         [self layoutAllViews];
 
         if (_showAnimated) {
@@ -145,9 +158,15 @@
 #pragma mark
 
 - (void)setup {
-    _overlapWindow = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
-    _overlapWindow.windowLevel = UIWindowLevelAlert;
-    _overlapWindow.backgroundColor = [UIColor clearColor];
+    if (_alertOnViewController) {
+        CGSize hostViewSize = _hostViewController.view.frame.size;
+        self.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, hostViewSize.width, hostViewSize.height)];
+    }
+    else {
+        _overlapWindow = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
+        _overlapWindow.windowLevel = UIWindowLevelAlert;
+        _overlapWindow.backgroundColor = [UIColor clearColor];
+    }
 
     _maskView = [[WCAlertMaskView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
 
@@ -178,8 +197,22 @@
         [_maskView removeTarget:self action:@selector(maskViewTapped:) forControlEvents:UIControlEventTouchUpInside];
     }
 
+    if (_maskViewBlurred) {
+                _maskView.layer.contents = (id)_blurImage.CGImage;
+        /*
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:_maskView.bounds];
+        imageView.image = _blurImage;
+                [_maskView addSubview:imageView];
+        _maskView.backgroundColor = [UIColor darkGrayColor];
+         */
+//        [self.view addSubview:imageView];
+    }
+    else {
+        _maskView.layer.contents = nil;
+    }
+    
     if (_alertOnViewController) {
-        [_hostViewController.view addSubview:_maskView];
+        [self.view addSubview:_maskView];
     }
     else {
         [_overlapWindow addSubview:_maskView];
@@ -188,7 +221,8 @@
 
 - (void)addContainerView {
     if (_alertOnViewController) {
-        [_hostViewController.view insertSubview:_containerView aboveSubview:_maskView];
+        [self.view insertSubview:_containerView aboveSubview:_maskView];
+        [_hostViewController.view addSubview:self.view];
     }
     else {
         [_overlapWindow insertSubview:_containerView aboveSubview:_maskView];
@@ -199,6 +233,14 @@
     UIView *contentView = _contentViewController.view;
 
     [_containerView addSubview:contentView];
+}
+
+- (void)removeMaskView {
+    [_maskView removeFromSuperview];
+}
+
+- (void)removeContainerView {
+    [_containerView removeFromSuperview];
 }
 
 - (void)layoutAllViews {
@@ -219,7 +261,7 @@
     }
 
     CGSize contentViewSize = contentView.frame.size;
-    CGSize overlayWindowSize = _overlapWindow.frame.size;
+    CGSize overlayWindowSize = _alertOnViewController ? _hostViewController.view.frame.size : _overlapWindow.frame.size;
 
     CGFloat x = (overlayWindowSize.width - contentViewSize.width) / 2.0;
     CGFloat y = (overlayWindowSize.height - contentViewSize.height) / 2.0;
@@ -249,6 +291,26 @@
     }
 }
 
+- (void)addBlurToView:(UIView *)view {
+    UIView *blurView = nil;
+
+    if ([UIBlurEffect class]) { // iOS 8
+        UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+        blurView.frame = view.frame;
+    }
+    else {   // workaround for iOS 7
+        blurView = [[UIToolbar alloc] initWithFrame:view.bounds];
+    }
+
+    [blurView setTranslatesAutoresizingMaskIntoConstraints:NO];
+
+    [view addSubview:blurView];
+
+//    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[blurView]|" options:0 metrics:0 views:NSDictionaryOfVariableBindings(blurView)]];
+//    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[blurView]|" options:0 metrics:0 views:NSDictionaryOfVariableBindings(blurView)]];
+}
+
 #pragma mark - Animations
 
 - (NSArray *)animatedLayers {
@@ -256,7 +318,7 @@
 }
 
 - (NSArray *)animatorsForShow {
-    CABasicAnimation *animationForMaskView = [CAAnimationHelper opacityAnimationWithStartAlpha:0.0 endAlpha:_maskViewAlpha];
+    CABasicAnimation *animationForMaskView = [CAAnimationHelper opacityAnimationWithStartAlpha:0.0 endAlpha:1];
     CAAnimation *animationProvided = [_animator animationsForShow];
 
     animationForMaskView.duration = _showDuration;
@@ -283,16 +345,19 @@
     // Call viewWilAppear: method
     [_contentViewController beginAppearanceTransition:YES animated:YES];
 
-    _maskView.backgroundColor = _maskViewColor;
-    _maskView.alpha = 0;
+//    _maskView.backgroundColor = _maskViewColor;
+//    _maskView.alpha = 1;
 
-    _containerView.alpha = 0;
+    _containerView.alpha = 1;
+//    _maskView.backgroundColor = [UIColor whiteColor];
+
 
     [CAAnimationHelper animationWithLayers:animatedLayers
                                 animations:animators
                                 completion:^{
-        _maskView.alpha = _maskViewAlpha;
-        _containerView.alpha = 1.0;
+//        _maskView.alpha = _maskViewAlpha;
+//        _maskView.backgroundColor = [UIColor whiteColor];
+//        _containerView.alpha = 1.0;
 
         [_contentViewController didMoveToParentViewController:self];
         BLOCK_SAFE_RUN(_animationCompletion, _contentViewController, YES, _backgroundTapped);
@@ -310,8 +375,8 @@
     // Call viewWilAppear: method
     [_contentViewController beginAppearanceTransition:YES animated:YES];
 
-    _maskView.backgroundColor = _maskViewColor;
-    _maskView.alpha = _maskViewAlpha;
+//    _maskView.backgroundColor = _maskViewColor;
+//    _maskView.alpha = _maskViewAlpha;
 
     _containerView.alpha = 1.0;
 
@@ -338,7 +403,13 @@
         [_contentViewController.view removeFromSuperview];
         _contentViewController.alertController = nil;     // Disconnect associated object
 
-        _overlapWindow.hidden = YES;
+        if (_alertOnViewController) {
+            self.view.hidden = YES;
+            [self.view removeFromSuperview];
+        }
+        else {
+            _overlapWindow.hidden = YES;
+        }
 
         [_contentViewController removeFromParentViewController];
         BLOCK_SAFE_RUN(_animationCompletion, _contentViewController, NO, _backgroundTapped);
@@ -364,8 +435,18 @@
     [_contentViewController.view removeFromSuperview];
     _contentViewController.alertController = nil; // Disconnect associated object
 
-    _overlapWindow.hidden = YES;
+    [_containerView removeFromSuperview];
+
+    if (_alertOnViewController) {
+        self.view.hidden = YES;
+        [self.view removeFromSuperview];
+    }
+    else {
+        _overlapWindow.hidden = YES;
+    }
+
     [_contentViewController removeFromParentViewController];
+
     BLOCK_SAFE_RUN(_animationCompletion, _contentViewController, NO, _backgroundTapped);
 
     // Call viewDidDisappear: method

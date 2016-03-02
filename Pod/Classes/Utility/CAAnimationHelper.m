@@ -23,7 +23,7 @@
     opacityAnimation.fromValue = @(startAlpha);
     opacityAnimation.toValue = @(endAlpha);
     opacityAnimation.fillMode = kCAFillModeForwards;
-    opacityAnimation.removedOnCompletion = NO;
+//    opacityAnimation.removedOnCompletion = NO;
     
     return opacityAnimation;
 }
@@ -33,7 +33,7 @@
     moveYAnimation.fromValue = @(startY);
     moveYAnimation.toValue = @(endY);
     moveYAnimation.fillMode = kCAFillModeForwards;
-    moveYAnimation.removedOnCompletion = NO;
+//    moveYAnimation.removedOnCompletion = NO;
     
     return moveYAnimation;
 }
@@ -43,7 +43,7 @@
     moveAnimation.fromValue = [NSValue valueWithCGPoint:startPoint];
     moveAnimation.toValue = [NSValue valueWithCGPoint:endPoint];
     moveAnimation.fillMode = kCAFillModeForwards;
-    moveAnimation.removedOnCompletion = NO;
+//    moveAnimation.removedOnCompletion = NO;
     
     return moveAnimation;
 }
@@ -53,7 +53,7 @@
     sizeAnimation.fromValue = [NSValue valueWithCGSize:startSize];
     sizeAnimation.toValue = [NSValue valueWithCGSize:endSize];
     sizeAnimation.fillMode = kCAFillModeForwards;
-    sizeAnimation.removedOnCompletion = NO;
+//    sizeAnimation.removedOnCompletion = NO;
     
     return sizeAnimation;
 }
@@ -83,7 +83,7 @@
     CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
     animationGroup.animations = animations;
     animationGroup.fillMode = kCAFillModeForwards;
-    animationGroup.removedOnCompletion = NO;
+//    animationGroup.removedOnCompletion = NO;
     
     return animationGroup;
 }

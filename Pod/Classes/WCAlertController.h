@@ -38,6 +38,7 @@
 @property (nonatomic, assign) CGFloat maskViewAlpha;
 @property (nonatomic, strong) UIColor *maskViewColor;
 @property (nonatomic, assign) BOOL modal;
+@property (nonatomic, assign) BOOL maskViewBlurred;
 
 #pragma mark Animation properties
 

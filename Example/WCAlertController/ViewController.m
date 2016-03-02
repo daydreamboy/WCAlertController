@@ -10,102 +10,202 @@
 
 #import <WCAlertController/WCAlertController.h>
 
-#import "RootViewController.h"
-#import "ModalViewController.h"
+#import "NavRootViewController.h"
 #import "ContentViewController.h"
+#import "ModalViewController.h"
+#import "RootViewController.h"
 
-@interface ViewController ()
+#define CELL_TITLE  @"title"
+#define CELL_ACTION @"action"
+
+@interface ViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, strong) UIButton *buttonAlertNavController;
 @property (nonatomic, strong) UIButton *buttonAlertViewController;
 
 @property (nonatomic, strong) UIButton *buttonPresentNavController;
 @property (nonatomic, strong) UIButton *buttonPresentViewController;
+
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSMutableArray *listData;
+
+@property (nonatomic, strong) WCAlertController *alert1;
+
 @end
 
 @implementation ViewController
 
+- (instancetype)init {
+    self = [super init];
+
+    if (self) {
+        _listData = [NSMutableArray array];
+        [_listData addObject:@{
+             CELL_TITLE: @"alert Nav Controller (UIWindow)",
+             CELL_ACTION: NSStringFromSelector(@selector(alertNavController:)),
+         }];
+        [_listData addObject:@{
+             CELL_TITLE: @"alert View Controller (UIWindow)",
+             CELL_ACTION: NSStringFromSelector(@selector(alertViewController:)),
+         }];
+
+        [_listData addObject:@{
+             CELL_TITLE: @"present Nav Controller",
+             CELL_ACTION: NSStringFromSelector(@selector(presentNavController:)),
+         }];
+        [_listData addObject:@{
+             CELL_TITLE: @"present modal View  Controller",
+             CELL_ACTION: NSStringFromSelector(@selector(presentViewController:)),
+         }];
+
+        [_listData addObject:@{
+             CELL_TITLE: @"alert Nav Controller (UIViewController)",
+             CELL_ACTION: NSStringFromSelector(@selector(alertNavControllerOnViewController:)),
+         }];
+        [_listData addObject:@{
+             CELL_TITLE: @"alert View Controller (UIViewController)",
+             CELL_ACTION: NSStringFromSelector(@selector(alertViewControllerOnViewController:)),
+         }];
+    }
+
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+
     self.view.backgroundColor = [UIColor whiteColor];
-    
-    CGSize screenSize = [[UIScreen mainScreen] bounds].size;
-    CGFloat spacingV = 10;
-    CGFloat startY = 60;
+    CGSize viewSize = self.view.frame.size;
 
-    _buttonAlertNavController = [UIButton buttonWithType:UIButtonTypeSystem];
-    _buttonAlertNavController.frame = CGRectMake(0, startY, screenSize.width, 40);
-    [_buttonAlertNavController setTitle:@"alert Nav Controller" forState:UIControlStateNormal];
-    [_buttonAlertNavController addTarget:self action:@selector(alertNavController:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_buttonAlertNavController];
+    CGFloat statusBarHeight = CGRectGetHeight([UIApplication sharedApplication].statusBarFrame);
 
-    startY = CGRectGetMaxY(_buttonAlertNavController.frame) + spacingV;
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, statusBarHeight, viewSize.width, viewSize.height - statusBarHeight)];
+    _tableView.delegate = self;
+    _tableView.dataSource = self;
+    [self.view addSubview:_tableView];
     
-    _buttonAlertViewController = [UIButton buttonWithType:UIButtonTypeSystem];
-    _buttonAlertViewController.frame = CGRectMake(0, startY, screenSize.width, 40);
-    [_buttonAlertViewController setTitle:@"alert View Controller" forState:UIControlStateNormal];
-    [_buttonAlertViewController addTarget:self action:@selector(alertViewController:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_buttonAlertViewController];
+    
+}
 
-    startY = CGRectGetMaxY(_buttonAlertViewController.frame) + spacingV;
-    
-    _buttonPresentNavController = [UIButton buttonWithType:UIButtonTypeSystem];
-    _buttonPresentNavController.frame = CGRectMake(0, startY, screenSize.width, 40);
-    [_buttonPresentNavController setTitle:@"present Nav Controller" forState:UIControlStateNormal];
-    [_buttonPresentNavController addTarget:self action:@selector(presentNavController:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_buttonPresentNavController];
-    
-    startY = CGRectGetMaxY(_buttonPresentNavController.frame) + spacingV;
-    
-    _buttonPresentViewController = [UIButton buttonWithType:UIButtonTypeSystem];
-    _buttonPresentViewController.frame = CGRectMake(0, startY, screenSize.width, 40);
-    [_buttonPresentViewController setTitle:@"present modal View  Controller" forState:UIControlStateNormal];
-    [_buttonPresentViewController addTarget:self action:@selector(presentViewController:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_buttonPresentViewController];
+#pragma mark - UITableViewDataSource
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    static NSString *sCellIdentifier = @"ViewController_UITableViewCell";
+
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:sCellIdentifier];
+
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:sCellIdentifier];
+    }
+
+    cell.textLabel.text = _listData[indexPath.row][CELL_TITLE];
+    if (indexPath.row % 2) {
+        cell.textLabel.textColor = [UIColor redColor];
+    }
+
+    return cell;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return _listData.count;
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+    SEL action = NSSelectorFromString(_listData[indexPath.row][CELL_ACTION]);
+    IMP imp = [self methodForSelector:action];
+    void (*func)(id, SEL, id) = (void *)imp;
+    func(self, action, self);
+
+//    [self performSelector:action withObject:self];
 }
 
 #pragma mark - Actions
 
 - (void)presentViewController:(id)sender {
     ModalViewController *modalViewController = [ModalViewController new];
+
     [self presentViewController:modalViewController animated:YES completion:nil];
 }
 
 - (void)presentNavController:(id)sender {
     RootViewController *rootViewController = [RootViewController new];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
-    
+
     [self presentViewController:navController animated:YES completion:nil];
 }
 
 - (void)alertViewController:(id)sender {
     ContentViewController *viewController = [ContentViewController new];
-    
-    WCAlertController *alert = [[WCAlertController alloc] initWithContentViewController:viewController completion:^(id contentViewController, BOOL presented, BOOL maskViewTapped) {
+
+    WCAlertController *alert = [[WCAlertController alloc] initWithContentViewController:viewController
+                                                                             completion:^(id contentViewController, BOOL presented, BOOL maskViewTapped) {
         if (viewController == contentViewController) {
             NSLog(@"%@ is %@", contentViewController, presented ? @"showed" : @"dismissed");
+
             if (!presented) {
                 NSLog(@"Dismissed by %@", maskViewTapped ? @"tapping background" : @"api caller");
             }
         }
     }];
-    alert.showDuration = 7;//0.3;
+
+//    alert.showDuration = 7;//0.3;
     NSLog(@"dismissDuration: %f", alert.dismissDuration);
-    alert.dismissDuration = 7;//0.2;
+//    alert.dismissDuration = 7;//0.2;
     alert.maskViewColor = [UIColor yellowColor];
+    alert.maskViewBlurred = YES;
     [alert presentAlertAnimated:YES];
 }
 
 - (void)alertNavController:(id)sender {
-    RootViewController *rootViewController = [RootViewController new];
+    NavRootViewController *rootViewController = [NavRootViewController new];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+
     navController.view.layer.cornerRadius = 10;
     navController.view.clipsToBounds = YES;
     //        navController.view.frame = CGRectMake(0, 0, 300, 400);
-    
+
     WCAlertController *alert = [[WCAlertController alloc] initWithContentViewController:navController completion:nil];
     alert.showDuration = 7;
     alert.dismissDuration = 7;
     [alert presentAlertAnimated:YES];
+}
+
+- (void)alertViewControllerOnViewController:(id)sender {
+    ContentViewController *viewController = [ContentViewController new];
+    
+    WCAlertController *alert = [[WCAlertController alloc] initWithContentViewController:viewController fromHostViewController:self completion:^(id contentViewController, BOOL presented, BOOL maskViewTapped) {
+        if (viewController == contentViewController) {
+            NSLog(@"%@ is %@", contentViewController, presented ? @"showed" : @"dismissed");
+            
+            if (!presented) {
+                NSLog(@"Dismissed by %@", maskViewTapped ? @"tapping background" : @"api caller");
+            }
+        }
+    }];
+
+//    alert.showDuration = 7;//0.3;
+    NSLog(@"dismissDuration: %f", alert.dismissDuration);
+//    alert.dismissDuration = 7;//0.2;
+    alert.maskViewColor = [UIColor yellowColor];
+    alert.maskViewBlurred = YES;
+    [alert presentAlertAnimated:NO];
+}
+
+- (void)alertNavControllerOnViewController:(id)sender {
+//    NavRootViewController *rootViewController = [NavRootViewController new];
+//    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+//
+//    navController.view.layer.cornerRadius = 10;
+//    navController.view.clipsToBounds = YES;
+//    //        navController.view.frame = CGRectMake(0, 0, 300, 400);
+//
+//    WCAlertController *alert = [[WCAlertController alloc] initWithContentViewController:navController completion:nil];
+//    alert.showDuration = 7;
+//    alert.dismissDuration = 7;
+//    [alert presentAlertAnimated:YES];
 }
 
 @end

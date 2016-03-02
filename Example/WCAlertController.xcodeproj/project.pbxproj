@@ -8,13 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		1A8AD339868D1274B645DB17 /* libPods-WCAlertController_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38769BF4B329FCB2F25F9DD0 /* libPods-WCAlertController_Example.a */; };
-		2B043C861C7E00BF00B1FBDC /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2B043C851C7E00BF00B1FBDC /* Launch Screen.storyboard */; };
 		2B043C891C7EA92D00B1FBDC /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B043C881C7EA92D00B1FBDC /* Reveal.framework */; };
 		2B043C8B1C7EA9B600B1FBDC /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B043C8A1C7EA9B600B1FBDC /* CFNetwork.framework */; };
-		2B043CA51C7F208300B1FBDC /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B043CA21C7F208300B1FBDC /* RootViewController.m */; };
 		2B043CA61C7F208300B1FBDC /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B043CA41C7F208300B1FBDC /* SecondViewController.m */; };
 		2B043CA91C7F20A900B1FBDC /* ModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B043CA81C7F20A900B1FBDC /* ModalViewController.m */; };
 		2B7566251C7FFB9000EF3D76 /* ContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B7566241C7FFB9000EF3D76 /* ContentViewController.m */; };
+		2B7566311C83EB4F00EF3D76 /* NavRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B7566301C83EB4F00EF3D76 /* NavRootViewController.m */; };
+		2B7566341C83EB8B00EF3D76 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B7566331C83EB8B00EF3D76 /* RootViewController.m */; };
+		2B7566361C83F60200EF3D76 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2B7566351C83F60200EF3D76 /* Launch Screen.storyboard */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -42,17 +43,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2B043C851C7E00BF00B1FBDC /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		2B043C881C7EA92D00B1FBDC /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Reveal.framework; sourceTree = "<group>"; };
 		2B043C8A1C7EA9B600B1FBDC /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		2B043CA11C7F208300B1FBDC /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
-		2B043CA21C7F208300B1FBDC /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		2B043CA31C7F208300B1FBDC /* SecondViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
 		2B043CA41C7F208300B1FBDC /* SecondViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
 		2B043CA71C7F20A900B1FBDC /* ModalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModalViewController.h; sourceTree = "<group>"; };
 		2B043CA81C7F20A900B1FBDC /* ModalViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModalViewController.m; sourceTree = "<group>"; };
 		2B7566231C7FFB9000EF3D76 /* ContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentViewController.h; sourceTree = "<group>"; };
 		2B7566241C7FFB9000EF3D76 /* ContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentViewController.m; sourceTree = "<group>"; };
+		2B75662F1C83EB4F00EF3D76 /* NavRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavRootViewController.h; sourceTree = "<group>"; };
+		2B7566301C83EB4F00EF3D76 /* NavRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavRootViewController.m; sourceTree = "<group>"; };
+		2B7566321C83EB8B00EF3D76 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RootViewController.h; path = WCAlertController/PushViewController/RootViewController.h; sourceTree = SOURCE_ROOT; };
+		2B7566331C83EB8B00EF3D76 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RootViewController.m; path = WCAlertController/PushViewController/RootViewController.m; sourceTree = SOURCE_ROOT; };
+		2B7566351C83F60200EF3D76 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		3372D117D76E455E366E698F /* libPods-WCAlertController_Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WCAlertController_Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		38769BF4B329FCB2F25F9DD0 /* libPods-WCAlertController_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WCAlertController_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D5F3702A8266230C26BE162 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
@@ -123,8 +126,8 @@
 		2B043CA01C7F208300B1FBDC /* PushViewController */ = {
 			isa = PBXGroup;
 			children = (
-				2B043CA11C7F208300B1FBDC /* RootViewController.h */,
-				2B043CA21C7F208300B1FBDC /* RootViewController.m */,
+				2B7566321C83EB8B00EF3D76 /* RootViewController.h */,
+				2B7566331C83EB8B00EF3D76 /* RootViewController.m */,
 				2B043CA31C7F208300B1FBDC /* SecondViewController.h */,
 				2B043CA41C7F208300B1FBDC /* SecondViewController.m */,
 			);
@@ -136,6 +139,8 @@
 			children = (
 				2B7566231C7FFB9000EF3D76 /* ContentViewController.h */,
 				2B7566241C7FFB9000EF3D76 /* ContentViewController.m */,
+				2B75662F1C83EB4F00EF3D76 /* NavRootViewController.h */,
+				2B7566301C83EB4F00EF3D76 /* NavRootViewController.m */,
 			);
 			path = ContentViewControllers;
 			sourceTree = "<group>";
@@ -196,7 +201,7 @@
 		6003F594195388D20070C39A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				2B043C851C7E00BF00B1FBDC /* Launch Screen.storyboard */,
+				2B7566351C83F60200EF3D76 /* Launch Screen.storyboard */,
 				6003F595195388D20070C39A /* WCAlertController-Info.plist */,
 				6003F596195388D20070C39A /* InfoPlist.strings */,
 				6003F599195388D20070C39A /* main.m */,
@@ -331,7 +336,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B043C861C7E00BF00B1FBDC /* Launch Screen.storyboard in Resources */,
+				2B7566361C83F60200EF3D76 /* Launch Screen.storyboard in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
 			);
@@ -447,7 +452,8 @@
 			files = (
 				6003F59E195388D20070C39A /* AppDelegate.m in Sources */,
 				2B7566251C7FFB9000EF3D76 /* ContentViewController.m in Sources */,
-				2B043CA51C7F208300B1FBDC /* RootViewController.m in Sources */,
+				2B7566341C83EB8B00EF3D76 /* RootViewController.m in Sources */,
+				2B7566311C83EB4F00EF3D76 /* NavRootViewController.m in Sources */,
 				2B043CA91C7F20A900B1FBDC /* ModalViewController.m in Sources */,
 				2B043CA61C7F208300B1FBDC /* SecondViewController.m in Sources */,
 				6003F5A7195388D20070C39A /* ViewController.m in Sources */,
@@ -526,7 +532,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -559,7 +565,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

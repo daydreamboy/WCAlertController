@@ -42,6 +42,7 @@
     CABasicAnimation *opacityAnimation = [CAAnimationHelper opacityAnimationWithStartAlpha:0.5 endAlpha:1.0];
 
     CAAnimationGroup *animationGroup = [CAAnimationHelper animationGroupWithAnimations:@[transformAnimation, opacityAnimation]];
+    animationGroup.removedOnCompletion = YES;
 
     animationGroup.duration = _showDuration;
 
@@ -61,6 +62,7 @@
     CABasicAnimation *opacityAnimation = [CAAnimationHelper opacityAnimationWithStartAlpha:1.0 endAlpha:0.0];
 
     CAAnimationGroup *animationGroup = [CAAnimationHelper animationGroupWithAnimations:@[transformAnimation, opacityAnimation]];
+    animationGroup.removedOnCompletion = YES;
 
     animationGroup.duration = _dismissDuration;
 
