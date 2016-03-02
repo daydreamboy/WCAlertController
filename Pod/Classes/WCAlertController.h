@@ -24,6 +24,7 @@
 
 @property (nonatomic, assign, readonly, getter=isPresented) BOOL presented;
 @property (nonatomic, strong, readonly) UIViewController *contentViewController;
+@property (nonatomic, strong, readonly) UIViewController *standOnViewController;
 /**
  *  Set the frame.size of contentViewController.view and will ignore self.view.frame set in viewDidLoad/viewWillAppear/viewDidAppear
  *
@@ -38,7 +39,14 @@
 @property (nonatomic, assign) CGFloat maskViewAlpha;
 @property (nonatomic, strong) UIColor *maskViewColor;
 @property (nonatomic, assign) BOOL modal;
+
+/**
+ *  Confict with @maskViewAlpha and @maskViewColor. If YES, these properties won't work
+ *
+ *  Default is NO
+ */
 @property (nonatomic, assign) BOOL maskViewBlurred;
+
 
 #pragma mark Animation properties
 

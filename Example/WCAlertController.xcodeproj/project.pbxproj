@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1A8AD339868D1274B645DB17 /* libPods-WCAlertController_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38769BF4B329FCB2F25F9DD0 /* libPods-WCAlertController_Example.a */; };
-		2B043C891C7EA92D00B1FBDC /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B043C881C7EA92D00B1FBDC /* Reveal.framework */; };
 		2B043C8B1C7EA9B600B1FBDC /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B043C8A1C7EA9B600B1FBDC /* CFNetwork.framework */; };
 		2B043CA61C7F208300B1FBDC /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B043CA41C7F208300B1FBDC /* SecondViewController.m */; };
 		2B043CA91C7F20A900B1FBDC /* ModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B043CA81C7F20A900B1FBDC /* ModalViewController.m */; };
@@ -16,6 +15,7 @@
 		2B7566311C83EB4F00EF3D76 /* NavRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B7566301C83EB4F00EF3D76 /* NavRootViewController.m */; };
 		2B7566341C83EB8B00EF3D76 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B7566331C83EB8B00EF3D76 /* RootViewController.m */; };
 		2B7566361C83F60200EF3D76 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2B7566351C83F60200EF3D76 /* Launch Screen.storyboard */; };
+		2BD1F3101C871BA6009A25EA /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BD1F30F1C871BA6009A25EA /* Reveal.framework */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -43,7 +43,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2B043C881C7EA92D00B1FBDC /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Reveal.framework; sourceTree = "<group>"; };
 		2B043C8A1C7EA9B600B1FBDC /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		2B043CA31C7F208300B1FBDC /* SecondViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
 		2B043CA41C7F208300B1FBDC /* SecondViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
@@ -56,6 +55,7 @@
 		2B7566321C83EB8B00EF3D76 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RootViewController.h; path = WCAlertController/PushViewController/RootViewController.h; sourceTree = SOURCE_ROOT; };
 		2B7566331C83EB8B00EF3D76 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RootViewController.m; path = WCAlertController/PushViewController/RootViewController.m; sourceTree = SOURCE_ROOT; };
 		2B7566351C83F60200EF3D76 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		2BD1F30F1C871BA6009A25EA /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Reveal.framework; sourceTree = "<group>"; };
 		3372D117D76E455E366E698F /* libPods-WCAlertController_Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WCAlertController_Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		38769BF4B329FCB2F25F9DD0 /* libPods-WCAlertController_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WCAlertController_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D5F3702A8266230C26BE162 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
@@ -94,7 +94,7 @@
 				2B043C8B1C7EA9B600B1FBDC /* CFNetwork.framework in Frameworks */,
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
-				2B043C891C7EA92D00B1FBDC /* Reveal.framework in Frameworks */,
+				2BD1F3101C871BA6009A25EA /* Reveal.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
 				1A8AD339868D1274B645DB17 /* libPods-WCAlertController_Example.a in Frameworks */,
 			);
@@ -169,8 +169,8 @@
 		6003F58C195388D20070C39A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2BD1F30F1C871BA6009A25EA /* Reveal.framework */,
 				2B043C8A1C7EA9B600B1FBDC /* CFNetwork.framework */,
-				2B043C881C7EA92D00B1FBDC /* Reveal.framework */,
 				6003F58D195388D20070C39A /* Foundation.framework */,
 				6003F58F195388D20070C39A /* CoreGraphics.framework */,
 				6003F591195388D20070C39A /* UIKit.framework */,

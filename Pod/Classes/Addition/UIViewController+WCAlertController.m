@@ -14,6 +14,7 @@
 @implementation UIViewController (WCAlertController)
 
 static const char *const AlertControllerObjectTag = "AlertControllerObjectTag";
+static const char *const StandOnViewControllerObjectTag = "StandOnViewControllerObjectTag";
 
 @dynamic alertController;
 
@@ -25,9 +26,32 @@ static const char *const AlertControllerObjectTag = "AlertControllerObjectTag";
     return objc_getAssociatedObject(self, AlertControllerObjectTag);
 }
 
+- (void)setStandOnViewController:(UIViewController *)standOnViewController {
+    objc_setAssociatedObject(self, StandOnViewControllerObjectTag, standOnViewController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (UIViewController *)standOnViewController {
+    return objc_getAssociatedObject(self, StandOnViewControllerObjectTag);
+}
+
 - (void)dismissAlertControllerAnimated:(BOOL)animated {
-    if (self.alertController) {
+    
+    if (self.standOnViewController.alertController) {
+        [self.standOnViewController.alertController dismissAlertAnimated:animated];
+        return;
+    }
+    
+    if (self.alertController && self.alertController.standOnViewController == self) {
         [self.alertController dismissAlertAnimated:animated];
+        return;
+    }
+}
+
+- (void)presentAlertController:(WCAlertController *)alertController animated:(BOOL)animated {
+    if (alertController) {
+        self.alertController = alertController;
+        alertController.contentViewController.standOnViewController = self;
+        [alertController presentAlertAnimated:animated];
     }
 }
 

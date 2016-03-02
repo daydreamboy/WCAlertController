@@ -76,7 +76,7 @@
  */
 + (CAAnimationGroup *)animationGroupWithAnimations:(NSArray *)animations {
     
-    for (id object in animations) {
+    for (__unused id object in animations) {
         NSAssert([object isKindOfClass:[CAAnimation class]], @"%@ is not a CAAnimation", object);
     }
     

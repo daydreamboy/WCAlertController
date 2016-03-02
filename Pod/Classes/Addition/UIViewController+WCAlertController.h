@@ -13,7 +13,9 @@
 @interface UIViewController (WCAlertController)
 
 @property (nonatomic, strong) WCAlertController *alertController;
+@property (nonatomic, strong) UIViewController *standOnViewController;
 
+- (void)presentAlertController:(WCAlertController *)alertController animated:(BOOL)animated;
 - (void)dismissAlertControllerAnimated:(BOOL)animated;
 
 @end

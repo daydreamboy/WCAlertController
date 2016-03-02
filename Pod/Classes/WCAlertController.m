@@ -30,8 +30,6 @@
     BOOL _showAnimated;
     BOOL _dismissAnimated;
 
-    WCAlertController *_retainedSelf;
-
     UIImage *_blurredImage;
 }
 
@@ -68,9 +66,7 @@
     self = [super init];
 
     if (self) {
-        _retainedSelf = self;
         _contentViewController = viewController;
-        _contentViewController.alertController = self;
         _hostViewController = hostViewController;
         _animationCompletion = [completion copy];
 
@@ -85,18 +81,19 @@
 - (void)presentAlertAnimated:(BOOL)animated {
     if (!_presented) {
         [self allowUserInteractionEvents:NO];
+
         _presented = YES;
         _showAnimated = animated;
 
-        UIImage *snapshot = [[UIApplication sharedApplication].keyWindow captureScreenshot];
-//        _blurImage = [snapshot blurredImageWithRadius:8.0
-//                                           iterations:8.0
-//                                            tintColor:[[UIColor blueColor] colorWithAlphaComponent:0.8]];//[UIColor colorWithWhite:.0 alpha:0.2]];
+        if (_maskViewBlurred) {
+            UIImage *snapshot = [[UIApplication sharedApplication].keyWindow captureScreenshot];
+            _blurredImage = [UIImageHelper blurredImageWithImage:snapshot imageBlurStyle:WCImageBlurStyleOriginal];
+        }
+        else {
+            _blurredImage = nil;
+        }
 
-        _blurredImage = [UIImageHelper blurredImageWithImage:snapshot imageBlurStyle:WCImageBlurStyleOriginal];
-//        _blurImage = [UIImageHelper blurredImageWithImage:snapshot tintColor:[UIColor yellowColor] maskColor:[UIColor greenColor]];
-        
-        [self presentOverlapWindowIfNeeded];
+        [self presentLayoutView];
         [self addMaskView];
         [self addContainerView];
         [self layoutAllViews];
@@ -143,9 +140,18 @@
     }
 }
 
+#pragma mark Getters
+
+- (UIViewController *)standOnViewController {
+    return self.contentViewController.standOnViewController;
+}
+
 #pragma mark - Override Methods
 
 - (void)dealloc {
+    self.contentViewController.standOnViewController = nil;
+    self.contentViewController = nil;
+    
     _overlapWindow = nil;
 }
 
@@ -182,10 +188,13 @@
     self.animationStyle = WCAlertAnimationStyleSystem;
 }
 
-- (void)presentOverlapWindowIfNeeded {
+- (void)presentLayoutView {
     if (!_alertOnViewController) {
         _overlapWindow.hidden = NO;
         [_overlapWindow makeKeyAndVisible];
+    }
+    else {
+        self.view.hidden = NO;
     }
 }
 
@@ -203,7 +212,7 @@
     else {
         _maskView.layer.contents = nil;
     }
-    
+
     if (_alertOnViewController) {
         [self.view addSubview:_maskView];
     }
@@ -284,26 +293,6 @@
     }
 }
 
-- (void)addBlurToView:(UIView *)view {
-    UIView *blurView = nil;
-
-    if ([UIBlurEffect class]) { // iOS 8
-        UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-        blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-        blurView.frame = view.frame;
-    }
-    else {   // workaround for iOS 7
-        blurView = [[UIToolbar alloc] initWithFrame:view.bounds];
-    }
-
-    [blurView setTranslatesAutoresizingMaskIntoConstraints:NO];
-
-    [view addSubview:blurView];
-
-//    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[blurView]|" options:0 metrics:0 views:NSDictionaryOfVariableBindings(blurView)]];
-//    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[blurView]|" options:0 metrics:0 views:NSDictionaryOfVariableBindings(blurView)]];
-}
-
 #pragma mark - Animations
 
 - (NSArray *)animatedLayers {
@@ -311,7 +300,9 @@
 }
 
 - (NSArray *)animatorsForShow {
-    CABasicAnimation *animationForMaskView = [CAAnimationHelper opacityAnimationWithStartAlpha:0.0 endAlpha:1];
+    CGFloat maskViewAlpha = _maskViewBlurred ? 1.0 : _maskViewBlurred;
+
+    CABasicAnimation *animationForMaskView = [CAAnimationHelper opacityAnimationWithStartAlpha:0.0 endAlpha:maskViewAlpha];
     CAAnimation *animationProvided = [_animator animationsForShow];
 
     animationForMaskView.duration = _showDuration;
@@ -321,7 +312,9 @@
 }
 
 - (NSArray *)animatorsForDismiss {
-    CABasicAnimation *animationForMaskView = [CAAnimationHelper opacityAnimationWithStartAlpha:_maskViewAlpha endAlpha:0.0];
+    CGFloat maskViewAlpha = _maskViewBlurred ? 1.0 : _maskViewBlurred;
+
+    CABasicAnimation *animationForMaskView = [CAAnimationHelper opacityAnimationWithStartAlpha:maskViewAlpha endAlpha:0.0];
     CAAnimation *animationProvided = [_animator animationsForDismiss];
 
     animationForMaskView.duration = _dismissDuration;
@@ -338,20 +331,13 @@
     // Call viewWilAppear: method
     [_contentViewController beginAppearanceTransition:YES animated:YES];
 
-//    _maskView.backgroundColor = _maskViewColor;
-//    _maskView.alpha = 1;
-
-    _containerView.alpha = 1;
-//    _maskView.backgroundColor = [UIColor whiteColor];
-
+    _maskView.backgroundColor = _maskViewColor;
+    _maskView.alpha = _maskViewBlurred ? 1.0 : _maskViewAlpha;
+    _containerView.alpha = 1.0;
 
     [CAAnimationHelper animationWithLayers:animatedLayers
                                 animations:animators
                                 completion:^{
-//        _maskView.alpha = _maskViewAlpha;
-//        _maskView.backgroundColor = [UIColor whiteColor];
-//        _containerView.alpha = 1.0;
-
         [_contentViewController didMoveToParentViewController:self];
         BLOCK_SAFE_RUN(_animationCompletion, _contentViewController, YES, _backgroundTapped);
 
@@ -368,9 +354,8 @@
     // Call viewWilAppear: method
     [_contentViewController beginAppearanceTransition:YES animated:YES];
 
-//    _maskView.backgroundColor = _maskViewColor;
-//    _maskView.alpha = _maskViewAlpha;
-
+    _maskView.backgroundColor = _maskViewColor;
+    _maskView.alpha = _maskViewBlurred ? 1.0 : _maskViewAlpha;
     _containerView.alpha = 1.0;
 
     [_contentViewController didMoveToParentViewController:self];
@@ -388,13 +373,14 @@
     // Call viewWillDisappear: method
     [_contentViewController beginAppearanceTransition:NO animated:YES];
 
+    _maskView.alpha = 0.0;
+    _containerView.alpha = 0.0;
+    
     [CAAnimationHelper animationWithLayers:animatedLayers
                                 animations:animators
                                 completion:^{
-        _maskView.alpha = 0.0;
         [_maskView removeFromSuperview];
         [_contentViewController.view removeFromSuperview];
-        _contentViewController.alertController = nil;     // Disconnect associated object
 
         if (_alertOnViewController) {
             self.view.hidden = YES;
@@ -411,8 +397,9 @@
         [_contentViewController endAppearanceTransition];
         //        [self allowBackSwipeGesture:YES];
         [self allowUserInteractionEvents:YES];
-        // Call dealloc
-        _retainedSelf = nil;
+                                    
+        // disconnect alertController with standOnViewController
+        self.contentViewController.standOnViewController.alertController = nil;
     }];
 }
 
@@ -423,10 +410,11 @@
     [_contentViewController beginAppearanceTransition:NO animated:YES];
 
     _maskView.alpha = 0.0;
+    _containerView.alpha = 0.0;
+    
     [_maskView removeFromSuperview];
 
     [_contentViewController.view removeFromSuperview];
-    _contentViewController.alertController = nil; // Disconnect associated object
 
     [_containerView removeFromSuperview];
 
@@ -446,8 +434,8 @@
     [_contentViewController endAppearanceTransition];
     [self allowUserInteractionEvents:YES];
 
-    // Call dealloc
-    _retainedSelf = nil;
+    // disconnect alertController with standOnViewController
+    self.contentViewController.standOnViewController.alertController = nil;
 }
 
 #pragma mark - Actions

@@ -82,8 +82,6 @@
     _tableView.delegate = self;
     _tableView.dataSource = self;
     [self.view addSubview:_tableView];
-    
-    
 }
 
 #pragma mark - UITableViewDataSource
@@ -98,6 +96,7 @@
     }
 
     cell.textLabel.text = _listData[indexPath.row][CELL_TITLE];
+
     if (indexPath.row % 2) {
         cell.textLabel.textColor = [UIColor redColor];
     }
@@ -127,7 +126,13 @@
 - (void)presentViewController:(id)sender {
     ModalViewController *modalViewController = [ModalViewController new];
 
-    [self presentViewController:modalViewController animated:YES completion:nil];
+    [self presentViewController:modalViewController
+                       animated:YES
+                     completion:^{
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [self dismissViewControllerAnimated:YES completion:nil];
+//        });
+    }];
 }
 
 - (void)presentNavController:(id)sender {
@@ -156,7 +161,8 @@
 //    alert.dismissDuration = 7;//0.2;
     alert.maskViewColor = [UIColor yellowColor];
     alert.maskViewBlurred = YES;
-    [alert presentAlertAnimated:YES];
+//    [alert presentAlertAnimated:YES];
+    [self presentAlertController:alert animated:YES];
 }
 
 - (void)alertNavController:(id)sender {
@@ -170,28 +176,45 @@
     WCAlertController *alert = [[WCAlertController alloc] initWithContentViewController:navController completion:nil];
     alert.showDuration = 7;
     alert.dismissDuration = 7;
-    [alert presentAlertAnimated:YES];
+//    [alert presentAlertAnimated:YES];
 }
 
 - (void)alertViewControllerOnViewController:(id)sender {
-    ContentViewController *viewController = [ContentViewController new];
-    
-    WCAlertController *alert = [[WCAlertController alloc] initWithContentViewController:viewController fromHostViewController:self completion:^(id contentViewController, BOOL presented, BOOL maskViewTapped) {
-        if (viewController == contentViewController) {
-            NSLog(@"%@ is %@", contentViewController, presented ? @"showed" : @"dismissed");
-            
-            if (!presented) {
-                NSLog(@"Dismissed by %@", maskViewTapped ? @"tapping background" : @"api caller");
-            }
-        }
-    }];
+    NSLog(@"start: %f", CACurrentMediaTime());
+//    [self presentAlertController:self.alert1 animated:YES];
+    [self.alert1 presentAlertAnimated:YES];
+}
 
-//    alert.showDuration = 7;//0.3;
-    NSLog(@"dismissDuration: %f", alert.dismissDuration);
-//    alert.dismissDuration = 7;//0.2;
-    alert.maskViewColor = [UIColor yellowColor];
-    alert.maskViewBlurred = YES;
-    [alert presentAlertAnimated:NO];
+- (WCAlertController *)alert1 {
+    if (!_alert1) {
+        ContentViewController *viewController = [ContentViewController new];
+
+        WCAlertController *alert = [[WCAlertController alloc] initWithContentViewController:viewController
+                                                                     fromHostViewController:self
+                                                                                 completion:^(id contentViewController, BOOL presented, BOOL maskViewTapped) {
+            if (viewController == contentViewController) {
+                NSLog(@"%@ is %@", contentViewController, presented ? @"showed" : @"dismissed");
+
+                if (!presented) {
+                    NSLog(@"Dismissed by %@", maskViewTapped ? @"tapping background" : @"api caller");
+                }
+                if (presented == YES) {
+                    NSLog(@"end: %f", CACurrentMediaTime());
+//                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                        [self dismissAlertControllerAnimated:NO];
+//                    });
+                }
+            }
+        }];
+        alert.maskViewColor = [UIColor yellowColor];
+        alert.maskViewBlurred = YES;
+//        alert.showDuration = 7;//0.3;
+//        alert.dismissDuration = 7;//0.2;
+
+        _alert1 = alert;
+    }
+
+    return _alert1;
 }
 
 - (void)alertNavControllerOnViewController:(id)sender {
