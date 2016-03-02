@@ -2,8 +2,8 @@
 //  CAAnimationHelper.m
 //  CAAnimationHelper
 //
-//  Created by chenliang-xy on 15/1/25.
-//  Copyright (c) 2015年 chenliang-xy. All rights reserved.
+//  Created by wesley_chen on 15/1/25.
+//  Copyright (c) 2015年 wesley_chen. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -23,7 +23,6 @@
     opacityAnimation.fromValue = @(startAlpha);
     opacityAnimation.toValue = @(endAlpha);
     opacityAnimation.fillMode = kCAFillModeForwards;
-//    opacityAnimation.removedOnCompletion = NO;
     
     return opacityAnimation;
 }
@@ -33,7 +32,6 @@
     moveYAnimation.fromValue = @(startY);
     moveYAnimation.toValue = @(endY);
     moveYAnimation.fillMode = kCAFillModeForwards;
-//    moveYAnimation.removedOnCompletion = NO;
     
     return moveYAnimation;
 }
@@ -43,7 +41,6 @@
     moveAnimation.fromValue = [NSValue valueWithCGPoint:startPoint];
     moveAnimation.toValue = [NSValue valueWithCGPoint:endPoint];
     moveAnimation.fillMode = kCAFillModeForwards;
-//    moveAnimation.removedOnCompletion = NO;
     
     return moveAnimation;
 }
@@ -53,7 +50,6 @@
     sizeAnimation.fromValue = [NSValue valueWithCGSize:startSize];
     sizeAnimation.toValue = [NSValue valueWithCGSize:endSize];
     sizeAnimation.fillMode = kCAFillModeForwards;
-//    sizeAnimation.removedOnCompletion = NO;
     
     return sizeAnimation;
 }
@@ -83,7 +79,6 @@
     CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
     animationGroup.animations = animations;
     animationGroup.fillMode = kCAFillModeForwards;
-//    animationGroup.removedOnCompletion = NO;
     
     return animationGroup;
 }

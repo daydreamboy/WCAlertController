@@ -2,8 +2,8 @@
 //  CAAnimationHelper.h
 //  CAAnimationHelper
 //
-//  Created by chenliang-xy on 15/1/25.
-//  Copyright (c) 2015年 chenliang-xy. All rights reserved.
+//  Created by wesley_chen on 15/1/25.
+//  Copyright (c) 2015年 wesley_chen. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
