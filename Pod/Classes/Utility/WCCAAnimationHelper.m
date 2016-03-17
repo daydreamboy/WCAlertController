@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "CAAnimationHelper.h"
+#import "WCCAAnimationHelper.h"
 
-@implementation CAAnimationHelper
+@implementation WCCAAnimationHelper
 
 /*!
  *  Get an animation for changing alpha

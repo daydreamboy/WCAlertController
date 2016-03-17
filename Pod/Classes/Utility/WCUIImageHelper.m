@@ -6,11 +6,11 @@
 //
 //
 
-#import "UIImageHelper.h"
+#import "WCUIImageHelper.h"
 
 #import <Accelerate/Accelerate.h>
 
-@implementation UIImageHelper
+@implementation WCUIImageHelper
 
 + (UIImage *)blurredImageWithImage:(UIImage *)image imageBlurStyle:(WCImageBlurStyle)style {
     UIColor *tintColor = [UIColor colorWithWhite:0.0 alpha:0.2];

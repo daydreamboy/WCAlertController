@@ -1,0 +1,14 @@
+PODS:
+  - WCAlertController (0.1.0)
+
+DEPENDENCIES:
+  - WCAlertController (from `../`)
+
+EXTERNAL SOURCES:
+  WCAlertController:
+    :path: ../
+
+SPEC CHECKSUMS:
+  WCAlertController: dd73296df2963f87a066bfd973cc95d27bc948e7
+
+COCOAPODS: 0.39.0

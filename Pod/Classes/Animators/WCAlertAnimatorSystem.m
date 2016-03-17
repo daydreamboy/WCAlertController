@@ -8,7 +8,7 @@
 
 #import "WCAlertAnimatorSystem.h"
 
-#import <WCAlertController/CAAnimationHelper.h>
+#import <WCAlertController/WCCAAnimationHelper.h>
 
 @implementation WCAlertAnimatorSystem {
     CGFloat _showDuration;
@@ -37,11 +37,11 @@
     NSArray *progressValues = @[@0.0, @0.5, @1.0];
     
     // Note: keyTimes for every frame is between 0%..100%, and the later one is must >= the former
-    CAKeyframeAnimation *transformAnimation = [CAAnimationHelper transformAnimationWithFrameValues:frameValues
+    CAKeyframeAnimation *transformAnimation = [WCCAAnimationHelper transformAnimationWithFrameValues:frameValues
                                                                                     progressValues:progressValues];
-    CABasicAnimation *opacityAnimation = [CAAnimationHelper opacityAnimationWithStartAlpha:0.5 endAlpha:1.0];
+    CABasicAnimation *opacityAnimation = [WCCAAnimationHelper opacityAnimationWithStartAlpha:0.5 endAlpha:1.0];
 
-    CAAnimationGroup *animationGroup = [CAAnimationHelper animationGroupWithAnimations:@[transformAnimation, opacityAnimation]];
+    CAAnimationGroup *animationGroup = [WCCAAnimationHelper animationGroupWithAnimations:@[transformAnimation, opacityAnimation]];
     animationGroup.removedOnCompletion = YES;
 
     animationGroup.duration = _showDuration;
@@ -56,12 +56,12 @@
                              [NSValue valueWithCATransform3D:CATransform3DMakeScale(0.80, 0.80, 1.00)]];
     NSArray *progressValues = @[@0.0, @0.5, @1.0];
     
-    CAKeyframeAnimation *transformAnimation = [CAAnimationHelper transformAnimationWithFrameValues:frameValues
+    CAKeyframeAnimation *transformAnimation = [WCCAAnimationHelper transformAnimationWithFrameValues:frameValues
                                                                                     progressValues:progressValues];
 
-    CABasicAnimation *opacityAnimation = [CAAnimationHelper opacityAnimationWithStartAlpha:1.0 endAlpha:0.0];
+    CABasicAnimation *opacityAnimation = [WCCAAnimationHelper opacityAnimationWithStartAlpha:1.0 endAlpha:0.0];
 
-    CAAnimationGroup *animationGroup = [CAAnimationHelper animationGroupWithAnimations:@[transformAnimation, opacityAnimation]];
+    CAAnimationGroup *animationGroup = [WCCAAnimationHelper animationGroupWithAnimations:@[transformAnimation, opacityAnimation]];
     animationGroup.removedOnCompletion = YES;
 
     animationGroup.duration = _dismissDuration;

@@ -16,7 +16,7 @@ typedef NS_ENUM(NSUInteger, WCImageBlurStyle) {
     WCImageBlurStyleDark,
 };
 
-@interface UIImageHelper : NSObject
+@interface WCUIImageHelper : NSObject
 
 + (UIImage *)blurredImageWithImage:(UIImage *)image imageBlurStyle:(WCImageBlurStyle)style;
 + (UIImage *)blurredImageWithImage:(UIImage *)image tintColor:(UIColor *)tintColor maskColor:(UIColor *)maskColor;

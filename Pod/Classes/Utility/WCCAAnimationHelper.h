@@ -12,7 +12,7 @@
 
 @class CABasicAnimation;
 
-@interface CAAnimationHelper : NSObject
+@interface WCCAAnimationHelper : NSObject
 
 // Get specific animations
 + (CABasicAnimation *)opacityAnimationWithStartAlpha:(CGFloat)startAlpha endAlpha:(CGFloat)endAlpha;

@@ -8,17 +8,13 @@
 
 #import "WCAlertController.h"
 
-#import <Accelerate/Accelerate.h>
-
 #import <WCAlertController/WCAlertMaskView.h>
 #import <WCAlertController/WCAlertContainerView.h>
 #import <WCAlertController/WCAlertControllerMacro.h>
-#import <WCAlertController/CAAnimationHelper.h>
-#import <WCAlertController/UIView+Snapshot.h>
-#import <WCAlertController/UIImageHelper.h>
-#import <WCAlertController/UIViewControllerHelper.h>
-#import <WCAlertController/UIResponder+KeyboardCache.h>
-#import <WCAlertController/UIResponder+FirstResponder.h>
+#import <WCAlertController/WCCAAnimationHelper.h>
+#import <WCAlertController/UIView+WCAlertController.h>
+#import <WCAlertController/WCUIImageHelper.h>
+#import <WCAlertController/UIResponder+WCAlertController.h>
 
 #import <WCAlertController/WCAlertAnimator.h>
 #import <WCAlertController/WCAlertAnimatorSystem.h>
@@ -117,7 +113,7 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
 
         if (_maskViewBlurred) {
             UIImage *snapshot = [[UIApplication sharedApplication].keyWindow captureScreenshot];
-            _blurredImage = [UIImageHelper blurredImageWithImage:snapshot imageBlurStyle:WCImageBlurStyleOriginal];
+            _blurredImage = [WCUIImageHelper blurredImageWithImage:snapshot imageBlurStyle:WCImageBlurStyleOriginal];
         }
         else {
             _blurredImage = nil;
@@ -335,7 +331,7 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
 }
 
 - (NSArray *)animatorsForShow {
-    CABasicAnimation *animationForMaskView = [CAAnimationHelper opacityAnimationWithStartAlpha:0.0 endAlpha:1.0];
+    CABasicAnimation *animationForMaskView = [WCCAAnimationHelper opacityAnimationWithStartAlpha:0.0 endAlpha:1.0];
     CAAnimation *animationProvided = [_animator animationsForShow];
 
     animationForMaskView.duration = _showDuration;
@@ -345,7 +341,7 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
 }
 
 - (NSArray *)animatorsForDismiss {
-    CABasicAnimation *animationForMaskView = [CAAnimationHelper opacityAnimationWithStartAlpha:1.0 endAlpha:0.0];
+    CABasicAnimation *animationForMaskView = [WCCAAnimationHelper opacityAnimationWithStartAlpha:1.0 endAlpha:0.0];
     CAAnimation *animationProvided = [_animator animationsForDismiss];
 
     animationForMaskView.duration = _dismissDuration;
@@ -366,7 +362,7 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
     _maskView.alpha = 1.0;
     _contentView.alpha = 1.0;
 
-    [CAAnimationHelper animationWithLayers:animatedLayers
+    [WCCAAnimationHelper animationWithLayers:animatedLayers
                                 animations:animators
                                 completion:^{
         [_contentViewController didMoveToParentViewController:self];
@@ -410,7 +406,7 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
     _maskView.alpha = 0.0;
     _contentView.alpha = 0.0;
 
-    [CAAnimationHelper animationWithLayers:animatedLayers
+    [WCCAAnimationHelper animationWithLayers:animatedLayers
                                 animations:animators
                                 completion:^{
         [_maskView removeFromSuperview];
