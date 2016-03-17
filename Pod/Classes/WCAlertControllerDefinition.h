@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- *  The callback when the WCAlertController showed or dismissed
+ *  The callback for current contentViewController when the WCAlertController showed or dismissed
  *
  *  @param contentViewController the ContentViewController to show as an alert
  *  @param presented             showed or dismissed
@@ -27,6 +27,10 @@ typedef NS_ENUM(NSUInteger, WCAlertAnimationStyle) {
      *  Just like UIAlertView
      */
     WCAlertAnimationStyleSystem,
+    /*!
+     *  Fade in when show
+     */
+    WCAlertAnimationStyleFade,
     /**
      *  <#Description#>
      */

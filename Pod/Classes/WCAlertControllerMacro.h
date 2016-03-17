@@ -28,5 +28,10 @@
     } while (0)
 #endif /* BLOCK_SAFE_RUN */
 
+// >= `9.0`
+#ifndef IOS9_OR_LATER
+#define IOS9_OR_LATER ([[[UIDevice currentDevice] systemVersion] compare:@"9.0" options:NSNumericSearch] != NSOrderedAscending)
+#endif
+
 
 #endif /* WCAlertControllerMacro_h */

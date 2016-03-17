@@ -8,9 +8,12 @@
 
 #import "ContentViewController.h"
 
-#import <WCAlertController/WCAlertController.h>
+#import "PresentedViewController.h"
 
-@interface ContentViewController ()
+#import <WCAlertController/WCAlertController.h>
+#import <MessageUI/MessageUI.h>
+
+@interface ContentViewController () <MFMessageComposeViewControllerDelegate>
 @property (nonatomic, strong) UIButton *buttonDismissAlert;
 @end
 
@@ -19,16 +22,16 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     NSLog(@"_cmd: %@, %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-    
+
     self.view.backgroundColor = [UIColor greenColor];
     self.view.frame = CGRectMake(0, 0, 200, 300);
     self.view.layer.cornerRadius = 5;
     self.view.clipsToBounds = YES;
-    
+
     CGSize viewSize = self.view.frame.size;
-    
+
     self.navigationController.view.frame = self.view.frame;
-    
+
     _buttonDismissAlert = [UIButton buttonWithType:UIButtonTypeSystem];
     _buttonDismissAlert.frame = CGRectMake(0, 60, viewSize.width, 40);
     [_buttonDismissAlert setTitle:@"Dismiss alert" forState:UIControlStateNormal];
@@ -44,7 +47,32 @@
 
 - (void)buttonClicked:(UIButton *)sender {
     if (sender == self.buttonDismissAlert) {
-        [self dismissAlertControllerAnimated:NO];
+//        [self dismissAlertControllerAnimated:NO];
+
+//        PresentedViewController *viewController = [PresentedViewController new];
+//        [self presentViewController:viewController animated:YES completion:nil];
+        [self showMFMessageComposeViewController];
+    }
+}
+
+- (void)showMFMessageComposeViewController {
+    if ([MFMessageComposeViewController canSendText]) {
+        MFMessageComposeViewController *controller = [[MFMessageComposeViewController alloc] init];
+        NSString *phoneNumber = @"123456789";
+        controller.recipients = @[phoneNumber];//[NSArray arrayWithObject:[ONEUserStore sharedInstance].codeModel.target_number];
+        NSString *content     = @"content";//[ONEUserStore sharedInstance].codeModel.content;
+        controller.body       = content;
+        controller.messageComposeDelegate = self;
+
+        if (self.standOnViewController) {
+            [self.standOnViewController.alertController presentViewController:controller animated:YES completion:nil];
+        }
+    }
+    else {
+        //提示：此设备没有短信功能
+        //[self showAlertViewTitle:nil message:@"此设备不支持短信"];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
     }
 }
 
@@ -76,6 +104,25 @@
 
 - (void)willMoveToParentViewController:(UIViewController *)parent {
     NSLog(@"_cmd: %@, %@, %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), parent);
+}
+
+#pragma mark - MFMessageComposeViewControllerDelegate
+
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller
+                 didFinishWithResult:(MessageComposeResult)result {
+    controller.delegate = nil;
+    switch (result) {
+        case MessageComposeResultSent: {
+        }
+        break;
+
+        case MessageComposeResultCancelled:
+            [self.standOnViewController.alertController dismissViewControllerAnimated:YES completion:nil];
+            break;
+
+        default:
+            break;
+    }
 }
 
 @end

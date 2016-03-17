@@ -11,6 +11,7 @@
 		2B043C8B1C7EA9B600B1FBDC /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B043C8A1C7EA9B600B1FBDC /* CFNetwork.framework */; };
 		2B043CA61C7F208300B1FBDC /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B043CA41C7F208300B1FBDC /* SecondViewController.m */; };
 		2B043CA91C7F20A900B1FBDC /* ModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B043CA81C7F20A900B1FBDC /* ModalViewController.m */; };
+		2B4B263E1C89816900910733 /* PresentedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B4B263D1C89816900910733 /* PresentedViewController.m */; };
 		2B7566251C7FFB9000EF3D76 /* ContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B7566241C7FFB9000EF3D76 /* ContentViewController.m */; };
 		2B7566311C83EB4F00EF3D76 /* NavRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B7566301C83EB4F00EF3D76 /* NavRootViewController.m */; };
 		2B7566341C83EB8B00EF3D76 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B7566331C83EB8B00EF3D76 /* RootViewController.m */; };
@@ -48,6 +49,8 @@
 		2B043CA41C7F208300B1FBDC /* SecondViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
 		2B043CA71C7F20A900B1FBDC /* ModalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModalViewController.h; sourceTree = "<group>"; };
 		2B043CA81C7F20A900B1FBDC /* ModalViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModalViewController.m; sourceTree = "<group>"; };
+		2B4B263C1C89816900910733 /* PresentedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PresentedViewController.h; sourceTree = "<group>"; };
+		2B4B263D1C89816900910733 /* PresentedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PresentedViewController.m; sourceTree = "<group>"; };
 		2B7566231C7FFB9000EF3D76 /* ContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentViewController.h; sourceTree = "<group>"; };
 		2B7566241C7FFB9000EF3D76 /* ContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentViewController.m; sourceTree = "<group>"; };
 		2B75662F1C83EB4F00EF3D76 /* NavRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavRootViewController.h; sourceTree = "<group>"; };
@@ -141,6 +144,8 @@
 				2B7566241C7FFB9000EF3D76 /* ContentViewController.m */,
 				2B75662F1C83EB4F00EF3D76 /* NavRootViewController.h */,
 				2B7566301C83EB4F00EF3D76 /* NavRootViewController.m */,
+				2B4B263C1C89816900910733 /* PresentedViewController.h */,
+				2B4B263D1C89816900910733 /* PresentedViewController.m */,
 			);
 			path = ContentViewControllers;
 			sourceTree = "<group>";
@@ -453,6 +458,7 @@
 				6003F59E195388D20070C39A /* AppDelegate.m in Sources */,
 				2B7566251C7FFB9000EF3D76 /* ContentViewController.m in Sources */,
 				2B7566341C83EB8B00EF3D76 /* RootViewController.m in Sources */,
+				2B4B263E1C89816900910733 /* PresentedViewController.m in Sources */,
 				2B7566311C83EB4F00EF3D76 /* NavRootViewController.m in Sources */,
 				2B043CA91C7F20A900B1FBDC /* ModalViewController.m in Sources */,
 				2B043CA61C7F208300B1FBDC /* SecondViewController.m in Sources */,

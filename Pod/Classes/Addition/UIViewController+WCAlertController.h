@@ -15,6 +15,7 @@
 @property (nonatomic, strong) WCAlertController *alertController;
 @property (nonatomic, strong) UIViewController *standOnViewController;
 
+// present/dimiss pair methods if using the UIViewController which based on to show or hide
 - (void)presentAlertController:(WCAlertController *)alertController animated:(BOOL)animated;
 - (void)dismissAlertControllerAnimated:(BOOL)animated;
 

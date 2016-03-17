@@ -181,8 +181,8 @@
 
 - (void)alertViewControllerOnViewController:(id)sender {
     NSLog(@"start: %f", CACurrentMediaTime());
-//    [self presentAlertController:self.alert1 animated:YES];
-    [self.alert1 presentAlertAnimated:YES];
+    [self presentAlertController:self.alert1 animated:YES];
+//    [self.alert1 presentAlertAnimated:YES];
 }
 
 - (WCAlertController *)alert1 {
@@ -206,9 +206,9 @@
                 }
             }
         }];
-//        alert.maskViewColor = [[UIColor yellowColor] colorWithAlphaComponent:0.3];
+        alert.maskViewColor = [[UIColor yellowColor] colorWithAlphaComponent:0.8];
 //        alert.maskViewBlurred = YES;
-        alert.showDuration = 7;//0.3;
+//        alert.showDuration = 7;//0.3;
 //        alert.dismissDuration = 7;//0.2;
 
         _alert1 = alert;

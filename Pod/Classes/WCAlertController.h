@@ -24,6 +24,7 @@
 
 @property (nonatomic, assign, readonly, getter=isPresented) BOOL presented;
 @property (nonatomic, strong, readonly) UIViewController *contentViewController;
+@property (nonatomic, strong, readonly) UIViewController *hostViewController;
 @property (nonatomic, strong, readonly) UIViewController *standOnViewController;
 /**
  *  Set the frame.size of contentViewController.view and will ignore self.view.frame set in viewDidLoad/viewWillAppear/viewDidAppear
@@ -70,6 +71,20 @@
  */
 @property (nonatomic, strong) id<WCAlertAnimator> animator;
 
+/*!
+ *  Previous first responder before alert presented. Only available when dismissKeyboardWhenPresented is YES
+ *  
+ *  @warning maybe it's nil
+ */
+@property (nonatomic, strong, readonly) id lastFirstResponder;
+/*!
+ *  Resign first responder (UITextField/UITextView) to dismiss showing keyboard when alert presented every time
+ *
+ *  Default is YES
+ *  @warning If the alert dismissed, it won't recover previous first responder
+ */
+@property (nonatomic, assign) BOOL dismissKeyboardWhenPresented;
+
 #pragma mark
 
 // alert on UIWindow
@@ -80,7 +95,14 @@
 - (instancetype)initWithContentViewController:(UIViewController *)viewController fromHostViewController:(UIViewController *)hostViewController;
 - (instancetype)initWithContentViewController:(UIViewController *)viewController fromHostViewController:(UIViewController *)hostViewController completion:(WCAlertControllerCompletion)completion;
 
+// present/dimiss pair methods if using the WCAlertController to show or hide
 - (void)presentAlertAnimated:(BOOL)animated;
 - (void)dismissAlertAnimated:(BOOL)animated;
+
+// push a new content view controller on WCAlertController
+- (void)pushContentViewController:(UIViewController *)viewController;
+- (void)pushContentViewController:(UIViewController *)viewController completion:(WCAlertControllerCompletion)completion;
+
+
 
 @end

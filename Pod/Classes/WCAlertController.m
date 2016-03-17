@@ -16,26 +16,43 @@
 #import <WCAlertController/CAAnimationHelper.h>
 #import <WCAlertController/UIView+Snapshot.h>
 #import <WCAlertController/UIImageHelper.h>
+#import <WCAlertController/UIViewControllerHelper.h>
+#import <WCAlertController/UIResponder+KeyboardCache.h>
+#import <WCAlertController/UIResponder+FirstResponder.h>
 
 #import <WCAlertController/WCAlertAnimator.h>
 #import <WCAlertController/WCAlertAnimatorSystem.h>
+#import <WCAlertController/WCAlertAnimatorFade.h>
+
+typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
+    WCAlertControllerStateUninitialized,
+    WCAlertControllerStateInitialized,
+    WCAlertControllerStateWillShow,
+    WCAlertControllerStateDidShow,
+    WCAlertControllerStateWillDissmiss,
+    WCAlertControllerStateDidDissmiss,
+};
 
 @interface WCAlertController () {
     WCAlertMaskView *_maskView;
     WCAlertContainerView *_containerView;
+    UIView *_contentView;
     UIWindow *_overlapWindow;
-    UIViewController *_hostViewController;
+
     BOOL _alertOnViewController;
     BOOL _backgroundTapped;
     BOOL _showAnimated;
     BOOL _dismissAnimated;
 
     UIImage *_blurredImage;
+    WCAlertControllerState _state;
 }
 
 @property (nonatomic, strong, readwrite) UIViewController *contentViewController;
+@property (nonatomic, strong, readwrite) UIViewController *hostViewController;
 @property (nonatomic, assign, readwrite) BOOL presented;
 @property (nonatomic, copy) WCAlertControllerCompletion animationCompletion;
+@property (nonatomic, strong, readwrite) id lastFirstResponder;
 
 @end
 
@@ -67,6 +84,7 @@
 
     if (self) {
         _contentViewController = viewController;
+        _contentView = viewController.view;
         _hostViewController = hostViewController;
         _animationCompletion = [completion copy];
 
@@ -82,8 +100,20 @@
     if (!_presented) {
         [self allowUserInteractionEvents:NO];
 
+        if (_dismissKeyboardWhenPresented) {
+            self.lastFirstResponder = [UIResponder currentFirstResponder];
+
+            if ([self.lastFirstResponder isKindOfClass:[UITextField class]]
+                || [self.lastFirstResponder isKindOfClass:[UITextView class]]) {
+                if ([self.lastFirstResponder isFirstResponder]) {
+                    [self.lastFirstResponder resignFirstResponder];
+                }
+            }
+        }
+
         _presented = YES;
         _showAnimated = animated;
+        _state = WCAlertControllerStateWillShow;
 
         if (_maskViewBlurred) {
             UIImage *snapshot = [[UIApplication sharedApplication].keyWindow captureScreenshot];
@@ -112,6 +142,13 @@
     [self dismissWithBackgroundTapped:NO];
 }
 
+- (void)pushContentViewController:(UIViewController *)viewController {
+    [self pushContentViewController:viewController completion:nil];
+}
+
+- (void)pushContentViewController:(UIViewController *)viewController completion:(WCAlertControllerCompletion)completion {
+}
+
 #pragma mark Setters
 
 - (void)setAnimationStyle:(WCAlertAnimationStyle)animationStyle {
@@ -119,6 +156,10 @@
     switch (_animationStyle) {
         case WCAlertAnimationStyleSystem:
             _animator = [WCAlertAnimatorSystem new];
+            break;
+
+        case WCAlertAnimationStyleFade:
+            _animator = [WCAlertAnimatorFade new];
             break;
 
         default:
@@ -141,15 +182,15 @@
 }
 
 - (void)setMaskViewColor:(UIColor *)maskViewColor {
-    
     if (maskViewColor) {
         const CGFloat alpha = 0.6f;
-        
+
         UIColor *appliedColor = maskViewColor;
+
         if (CGColorGetAlpha(maskViewColor.CGColor) == 1.0f) {
             appliedColor = [maskViewColor colorWithAlphaComponent:alpha];
         }
-        
+
         _maskViewColor = appliedColor;
     }
 }
@@ -163,9 +204,11 @@
 #pragma mark - Override Methods
 
 - (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+
     self.contentViewController.standOnViewController = nil;
     self.contentViewController = nil;
-    
+
     _overlapWindow = nil;
 }
 
@@ -180,12 +223,15 @@
 - (void)setup {
     if (_alertOnViewController) {
         CGSize hostViewSize = _hostViewController.view.frame.size;
-        self.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, hostViewSize.width, hostViewSize.height)];
+        self.view.frame = CGRectMake(0, 0, hostViewSize.width, hostViewSize.height);
     }
     else {
         _overlapWindow = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
-        _overlapWindow.windowLevel = UIWindowLevelAlert;
+        _overlapWindow.windowLevel = IOS9_OR_LATER ? pow(10, 7) : UIWindowLevelAlert;
         _overlapWindow.backgroundColor = [UIColor clearColor];
+        _overlapWindow.rootViewController = self;
+        
+        self.view.frame = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 
     _maskView = [[WCAlertMaskView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
@@ -199,15 +245,19 @@
 
     // use WCAlertAnimationStyleSystem by default
     self.animationStyle = WCAlertAnimationStyleSystem;
+
+    _state = WCAlertControllerStateInitialized;
+
+    _dismissKeyboardWhenPresented = YES;
 }
 
 - (void)presentLayoutView {
-    if (!_alertOnViewController) {
-        _overlapWindow.hidden = NO;
-        [_overlapWindow makeKeyAndVisible];
+    if (_alertOnViewController) {
+        self.view.hidden = NO;
     }
     else {
-        self.view.hidden = NO;
+        _overlapWindow.hidden = NO;
+        [_overlapWindow makeKeyAndVisible];
     }
 }
 
@@ -218,75 +268,47 @@
     else {
         [_maskView removeTarget:self action:@selector(maskViewTapped:) forControlEvents:UIControlEventTouchUpInside];
     }
-
-    if (_maskViewBlurred) {
-        _maskView.layer.contents = (id)_blurredImage.CGImage;
-    }
-    else {
-        _maskView.layer.contents = nil;
-    }
-
-    if (_alertOnViewController) {
-        [self.view addSubview:_maskView];
-    }
-    else {
-        [_overlapWindow addSubview:_maskView];
-    }
+    
+    _maskView.layer.contents = _maskViewBlurred ? (id)_blurredImage.CGImage : nil;
+    [self.view addSubview:_maskView];
 }
 
 - (void)addContainerView {
     if (_alertOnViewController) {
         [self.view insertSubview:_containerView aboveSubview:_maskView];
+        [_hostViewController addChildViewController:self];
         [_hostViewController.view addSubview:self.view];
     }
     else {
-        [_overlapWindow insertSubview:_containerView aboveSubview:_maskView];
+        [self.view insertSubview:_containerView aboveSubview:_maskView];
+    }
+}
+
+- (void)removeContainerView {
+    if (_alertOnViewController) {
+        
+    }
+    else {
     }
 }
 
 - (void)addContentView {
-    UIView *contentView = _contentViewController.view;
-
-    [_containerView addSubview:contentView];
+    [_containerView addSubview:_contentView];
 }
 
 - (void)removeMaskView {
     [_maskView removeFromSuperview];
 }
 
-- (void)removeContainerView {
-    [_containerView removeFromSuperview];
-}
-
 - (void)layoutAllViews {
-    UIView *contentView = _contentViewController.view;
+    CGSize contentViewSize = _contentView.frame.size;
+    CGSize parentViewSize = _alertOnViewController ? _hostViewController.view.frame.size : self.view.frame.size;
 
-    if ([_contentViewController isKindOfClass:[UINavigationController class]]) {
-        NSArray *viewControllers = [(UINavigationController *)_contentViewController viewControllers];
-        UIViewController *rootViewController;
+    // Center _contentView in _containerView
+    CGFloat x = (parentViewSize.width - contentViewSize.width) / 2.0;
+    CGFloat y = (parentViewSize.height - contentViewSize.height) / 2.0;
 
-        if (viewControllers.count > 0) {
-            rootViewController = viewControllers[0];
-        }
-
-        NSAssert(rootViewController, @"%@ should have a root view controller", _contentViewController);
-
-        contentView = rootViewController.view;
-    }
-
-    CGSize contentViewSize = contentView.frame.size;
-    CGSize overlayWindowSize = _alertOnViewController ? _hostViewController.view.frame.size : _overlapWindow.frame.size;
-
-    CGFloat x = (overlayWindowSize.width - contentViewSize.width) / 2.0;
-    CGFloat y = (overlayWindowSize.height - contentViewSize.height) / 2.0;
-
-    _containerView.frame = CGRectMake(x, y, contentViewSize.width, contentViewSize.height);
-    contentView.frame = CGRectMake(0, 0, contentViewSize.width, contentViewSize.height);
-
-    if ([_contentViewController isKindOfClass:[UINavigationController class]]) {
-        UINavigationController *navController = (UINavigationController *)_contentViewController;
-        navController.view.frame = contentView.frame;
-    }
+    _contentView.frame = CGRectMake(x, y, contentViewSize.width, contentViewSize.height);
 }
 
 - (void)dismissWithBackgroundTapped:(BOOL)backgroundTapped {
@@ -295,6 +317,7 @@
         _presented = NO;
 
         _backgroundTapped = backgroundTapped;
+        _state = WCAlertControllerStateWillDissmiss;
 
         if (_dismissAnimated) {
             [self executeDismissWithLayers:[self animatedLayers] animators:[self animatorsForDismiss]];
@@ -308,7 +331,7 @@
 #pragma mark - Animations
 
 - (NSArray *)animatedLayers {
-    return @[_maskView.layer, _containerView.layer];
+    return @[_maskView.layer, _contentView.layer];
 }
 
 - (NSArray *)animatorsForShow {
@@ -341,7 +364,7 @@
 
     _maskView.backgroundColor = _maskViewColor;
     _maskView.alpha = 1.0;
-    _containerView.alpha = 1.0;
+    _contentView.alpha = 1.0;
 
     [CAAnimationHelper animationWithLayers:animatedLayers
                                 animations:animators
@@ -351,6 +374,8 @@
 
         // Call viewDidAppear: method
         [_contentViewController endAppearanceTransition];
+
+        _state = WCAlertControllerStateDidShow;
         [self allowUserInteractionEvents:YES];
     }];
 }
@@ -364,7 +389,7 @@
 
     _maskView.backgroundColor = _maskViewColor;
     _maskView.alpha = 1.0f;
-    _containerView.alpha = 1.0;
+    _contentView.alpha = 1.0;
 
     [_contentViewController didMoveToParentViewController:self];
     BLOCK_SAFE_RUN(_animationCompletion, _contentViewController, YES, _backgroundTapped);
@@ -372,6 +397,7 @@
     // Call viewDidAppear: method
     [_contentViewController endAppearanceTransition];
 
+    _state = WCAlertControllerStateDidShow;
     [self allowUserInteractionEvents:YES];
 }
 
@@ -382,30 +408,35 @@
     [_contentViewController beginAppearanceTransition:NO animated:YES];
 
     _maskView.alpha = 0.0;
-    _containerView.alpha = 0.0;
-    
+    _contentView.alpha = 0.0;
+
     [CAAnimationHelper animationWithLayers:animatedLayers
                                 animations:animators
                                 completion:^{
         [_maskView removeFromSuperview];
-        [_contentViewController.view removeFromSuperview];
+        [_contentView removeFromSuperview];
 
         if (_alertOnViewController) {
             self.view.hidden = YES;
+            [_containerView removeFromSuperview];
             [self.view removeFromSuperview];
         }
         else {
+            [_containerView removeFromSuperview];
             _overlapWindow.hidden = YES;
         }
 
         [_contentViewController removeFromParentViewController];
+        [self removeFromParentViewController]; // Add new
         BLOCK_SAFE_RUN(_animationCompletion, _contentViewController, NO, _backgroundTapped);
 
         // Call viewDidDisappear: method
         [_contentViewController endAppearanceTransition];
         //        [self allowBackSwipeGesture:YES];
+        _state = WCAlertControllerStateDidDissmiss;
+
         [self allowUserInteractionEvents:YES];
-                                    
+
         // disconnect alertController with standOnViewController
         self.contentViewController.standOnViewController.alertController = nil;
     }];
@@ -418,11 +449,11 @@
     [_contentViewController beginAppearanceTransition:NO animated:YES];
 
     _maskView.alpha = 0.0;
-    _containerView.alpha = 0.0;
-    
+    _contentView.alpha = 0.0;
+
     [_maskView removeFromSuperview];
 
-    [_contentViewController.view removeFromSuperview];
+    [_contentView removeFromSuperview];
 
     [_containerView removeFromSuperview];
 
@@ -435,11 +466,15 @@
     }
 
     [_contentViewController removeFromParentViewController];
+    [self removeFromParentViewController]; // Add new
 
     BLOCK_SAFE_RUN(_animationCompletion, _contentViewController, NO, _backgroundTapped);
 
     // Call viewDidDisappear: method
     [_contentViewController endAppearanceTransition];
+
+    _state = WCAlertControllerStateDidDissmiss;
+
     [self allowUserInteractionEvents:YES];
 
     // disconnect alertController with standOnViewController
