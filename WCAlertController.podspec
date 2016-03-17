@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = "WCAlertController"
   s.version          = "0.1.0"
-  s.summary          = "A short description of WCAlertController."
+  s.summary          = "A container view controller for alerting"
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -17,13 +17,14 @@ Pod::Spec.new do |s|
 #   * Write the description between the DESC delimiters below.
 #   * Finally, don't worry about the indent, CocoaPods strips it!  
   s.description      = <<-DESC
+  A container view controller for alerting by providing customized UIViewController
                        DESC
 
-  s.homepage         = "https://github.com/<GITHUB_USERNAME>/WCAlertController"
+  s.homepage         = "https://github.com/daydreamboy/WCAlertController.git"
   # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
   s.license          = 'MIT'
   s.author           = { "wesley_chen" => "wesley4chen@gmail.com" }
-  s.source           = { :git => "https://github.com/<GITHUB_USERNAME>/WCAlertController.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/daydreamboy/WCAlertController.git", :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.platform     = :ios, '7.0'
