@@ -49,6 +49,7 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
 @property (nonatomic, assign, readwrite) BOOL presented;
 @property (nonatomic, copy) WCAlertControllerCompletion animationCompletion;
 @property (nonatomic, strong, readwrite) id lastFirstResponder;
+@property (nonatomic, strong) NSMutableArray *gesturesArray;
 
 @end
 
@@ -226,7 +227,7 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
         _overlapWindow.windowLevel = IOS9_OR_LATER ? pow(10, 7) : UIWindowLevelAlert;
         _overlapWindow.backgroundColor = [UIColor clearColor];
         _overlapWindow.rootViewController = self;
-        
+
         self.view.frame = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 
@@ -264,7 +265,7 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
     else {
         [_maskView removeTarget:self action:@selector(maskViewTapped:) forControlEvents:UIControlEventTouchUpInside];
     }
-    
+
     _maskView.layer.contents = _maskViewBlurred ? (id)_blurredImage.CGImage : nil;
     [self.view addSubview:_maskView];
 }
@@ -274,6 +275,9 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
         [self.view insertSubview:_containerView aboveSubview:_maskView];
         [_hostViewController addChildViewController:self];
         [_hostViewController.view addSubview:self.view];
+        [_hostViewController.view bringSubviewToFront:self.view];
+
+        _gesturesArray = [NSMutableArray array];
     }
     else {
         [self.view insertSubview:_containerView aboveSubview:_maskView];
@@ -282,7 +286,6 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
 
 - (void)removeContainerView {
     if (_alertOnViewController) {
-        
     }
     else {
     }
@@ -350,6 +353,25 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
     return @[animationForMaskView, animationProvided];
 }
 
+- (void)removeGesturesIfNeeded {
+    if (_alertOnViewController) {
+        [_gesturesArray addObjectsFromArray:_hostViewController.view.gestureRecognizers];
+
+        // http://stackoverflow.com/questions/10947982/how-to-remove-gesture-recogniser
+        for (UIGestureRecognizer *recognizer in _hostViewController.view.gestureRecognizers) {
+            [_hostViewController.view removeGestureRecognizer:recognizer];
+        }
+    }
+}
+
+- (void)addGesturesIfNeeded {
+    if (_alertOnViewController) {
+        for (UIGestureRecognizer *recognizer in _gesturesArray) {
+            [_hostViewController.view addGestureRecognizer:recognizer];
+        }
+    }
+}
+
 - (void)executeShowWithLayers:(NSArray *)animatedLayers animators:animators {
     // @sa https://www.safaribooksonline.com/library/view/the-core-ios/9780133510119/ch07lev2sec18.html
     [self addChildViewController:_contentViewController];
@@ -362,9 +384,11 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
     _maskView.alpha = 1.0;
     _contentView.alpha = 1.0;
 
+    [self removeGesturesIfNeeded];
+
     [WCCAAnimationHelper animationWithLayers:animatedLayers
-                                animations:animators
-                                completion:^{
+                                  animations:animators
+                                  completion:^{
         [_contentViewController didMoveToParentViewController:self];
         BLOCK_SAFE_RUN(_animationCompletion, _contentViewController, YES, _backgroundTapped);
 
@@ -387,6 +411,8 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
     _maskView.alpha = 1.0f;
     _contentView.alpha = 1.0;
 
+    [self removeGesturesIfNeeded];
+
     [_contentViewController didMoveToParentViewController:self];
     BLOCK_SAFE_RUN(_animationCompletion, _contentViewController, YES, _backgroundTapped);
 
@@ -407,12 +433,14 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
     _contentView.alpha = 0.0;
 
     [WCCAAnimationHelper animationWithLayers:animatedLayers
-                                animations:animators
-                                completion:^{
+                                  animations:animators
+                                  completion:^{
+
         [_maskView removeFromSuperview];
         [_contentView removeFromSuperview];
 
         if (_alertOnViewController) {
+            [self addGesturesIfNeeded];
             self.view.hidden = YES;
             [_containerView removeFromSuperview];
             [self.view removeFromSuperview];
@@ -448,12 +476,11 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
     _contentView.alpha = 0.0;
 
     [_maskView removeFromSuperview];
-
     [_contentView removeFromSuperview];
-
     [_containerView removeFromSuperview];
 
     if (_alertOnViewController) {
+        [self addGesturesIfNeeded];
         self.view.hidden = YES;
         [self.view removeFromSuperview];
     }
