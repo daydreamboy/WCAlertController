@@ -49,6 +49,10 @@
  *  Default is NO
  */
 @property (nonatomic, assign) BOOL maskViewBlurred;
+
+/*!
+ *  blur style of maskView. Only work when maskViewBlurred = YES
+ */
 @property (nonatomic, assign) WCAlertBlurStyle maskViewBlurStyle;
 
 #pragma mark Animation properties
