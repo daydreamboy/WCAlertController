@@ -24,9 +24,12 @@
     NSLog(@"_cmd: %@, %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
     self.view.backgroundColor = [UIColor greenColor];
-    self.view.frame = CGRectMake(0, 0, 200, 300);
+    self.view.frame = CGRectMake(0, 0, 200, 200);
     self.view.layer.cornerRadius = 5;
     self.view.clipsToBounds = YES;
+    
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    self.edgesForExtendedLayout = UIRectEdgeNone;
 
     CGSize viewSize = self.view.frame.size;
 
@@ -77,7 +80,7 @@
 }
 
 #pragma mark
-
+/*
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     NSLog(@"_cmd: %@, %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
@@ -105,6 +108,7 @@
 - (void)willMoveToParentViewController:(UIViewController *)parent {
     NSLog(@"_cmd: %@, %@, %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), parent);
 }
+ */
 
 #pragma mark - MFMessageComposeViewControllerDelegate
 

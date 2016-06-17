@@ -20,6 +20,13 @@
 #import <WCAlertController/WCAlertAnimatorSystem.h>
 #import <WCAlertController/WCAlertAnimatorFade.h>
 
+// WCLog
+#if DEBUG_LOG
+#   define WCLog(fmt, ...) { NSLog((@"[WCAlertController] " fmt), ## __VA_ARGS__); }
+#else
+#   define WCLog(fmt, ...)
+#endif
+
 typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
     WCAlertControllerStateUninitialized,
     WCAlertControllerStateInitialized,
@@ -30,23 +37,25 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
 };
 
 @interface WCAlertController () {
-    WCAlertMaskView *_maskView;
-    WCAlertContainerView *_containerView;
-    UIView *_contentView;
-    UIWindow *_overlapWindow;
-
-    BOOL _alertOnViewController;
-    BOOL _backgroundTapped;
     BOOL _showAnimated;
     BOOL _dismissAnimated;
 
     UIImage *_blurredImage;
-    WCAlertControllerState _state;
 }
 
 @property (nonatomic, strong, readwrite) UIViewController *contentViewController;
 @property (nonatomic, strong, readwrite) UIViewController *hostViewController;
 @property (nonatomic, assign, readwrite) BOOL presented;
+
+@property (nonatomic, strong) UIWindow *overlapWindow;
+@property (nonatomic, strong) WCAlertMaskView *maskView;
+@property (nonatomic, strong) WCAlertContainerView *containerView;
+@property (nonatomic, strong) UIView *contentView;
+
+@property (nonatomic, assign) BOOL backgroundTapped;
+@property (nonatomic, assign) BOOL alertOnViewController;
+@property (nonatomic, assign) WCAlertControllerState state;
+
 @property (nonatomic, copy) WCAlertControllerCompletion animationCompletion;
 @property (nonatomic, strong, readwrite) id lastFirstResponder;
 @property (nonatomic, strong) NSMutableArray *gesturesArray;
@@ -200,7 +209,14 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
 
 #pragma mark - Override Methods
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    NSLog(@"%@", self.view);
+}
+
 - (void)dealloc {
+    WCLog(@"_cmd: %@, %@", NSStringFromSelector(_cmd), self);
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
     self.contentViewController.standOnViewController = nil;
@@ -246,6 +262,9 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
     _state = WCAlertControllerStateInitialized;
 
     _dismissKeyboardWhenPresented = YES;
+    
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    self.edgesForExtendedLayout = UIRectEdgeNone;
 }
 
 - (void)presentLayoutView {
@@ -273,10 +292,26 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
 - (void)addContainerView {
     if (_alertOnViewController) {
         [self.view insertSubview:_containerView aboveSubview:_maskView];
-        [_hostViewController addChildViewController:self];
-        [_hostViewController.view addSubview:self.view];
-        [_hostViewController.view bringSubviewToFront:self.view];
-
+        
+        if ([_hostViewController isKindOfClass:[UITableViewController class]]) {
+            if ([[[[_hostViewController.view.superview nextResponder] nextResponder] nextResponder] isKindOfClass:[UIViewController class]]) {
+                UIViewController *superViewController = [[[_hostViewController.view.superview nextResponder] nextResponder] nextResponder];
+                
+                [superViewController addChildViewController:self];
+                
+                if ([superViewController isKindOfClass:[UINavigationController class]]) {
+                    UINavigationController *navController = superViewController;
+                    [superViewController.view insertSubview:self.view atIndex:1];
+                }
+            }
+        }
+        else {
+            [_hostViewController addChildViewController:self];
+            
+            [_hostViewController.view addSubview:self.view];
+            [_hostViewController.view bringSubviewToFront:self.view];
+        }
+        
         _gesturesArray = [NSMutableArray array];
     }
     else {
@@ -386,17 +421,18 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
 
     [self removeGesturesIfNeeded];
 
+    __weak typeof(self) weak_self = self;
     [WCCAAnimationHelper animationWithLayers:animatedLayers
                                   animations:animators
                                   completion:^{
-        [_contentViewController didMoveToParentViewController:self];
-        BLOCK_SAFE_RUN(_animationCompletion, _contentViewController, YES, _backgroundTapped);
+        [weak_self.contentViewController didMoveToParentViewController:self];
+        BLOCK_SAFE_RUN(weak_self.animationCompletion, weak_self.contentViewController, YES, weak_self.backgroundTapped);
 
         // Call viewDidAppear: method
-        [_contentViewController endAppearanceTransition];
+        [weak_self.contentViewController endAppearanceTransition];
 
-        _state = WCAlertControllerStateDidShow;
-        [self allowUserInteractionEvents:YES];
+        weak_self.state = WCAlertControllerStateDidShow;
+        [weak_self allowUserInteractionEvents:YES];
     }];
 }
 
@@ -432,37 +468,38 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
     _maskView.alpha = 0.0;
     _contentView.alpha = 0.0;
 
+    __weak typeof(self) weak_self = self;
     [WCCAAnimationHelper animationWithLayers:animatedLayers
                                   animations:animators
                                   completion:^{
 
-        [_maskView removeFromSuperview];
-        [_contentView removeFromSuperview];
+        [weak_self.maskView removeFromSuperview];
+        [weak_self.contentView removeFromSuperview];
 
-        if (_alertOnViewController) {
-            [self addGesturesIfNeeded];
-            self.view.hidden = YES;
-            [_containerView removeFromSuperview];
-            [self.view removeFromSuperview];
+        if (weak_self.alertOnViewController) {
+            [weak_self addGesturesIfNeeded];
+            weak_self.view.hidden = YES;
+            [weak_self.containerView removeFromSuperview];
+            [weak_self.view removeFromSuperview];
         }
         else {
-            [_containerView removeFromSuperview];
-            _overlapWindow.hidden = YES;
+            [weak_self.containerView removeFromSuperview];
+            weak_self.overlapWindow.hidden = YES;
         }
 
-        [_contentViewController removeFromParentViewController];
-        [self removeFromParentViewController]; // Add new
-        BLOCK_SAFE_RUN(_animationCompletion, _contentViewController, NO, _backgroundTapped);
+        [weak_self.contentViewController removeFromParentViewController];
+        [weak_self removeFromParentViewController]; // Add new
+        BLOCK_SAFE_RUN(weak_self.animationCompletion, weak_self.contentViewController, NO, weak_self.backgroundTapped);
 
         // Call viewDidDisappear: method
-        [_contentViewController endAppearanceTransition];
+        [weak_self.contentViewController endAppearanceTransition];
         //        [self allowBackSwipeGesture:YES];
-        _state = WCAlertControllerStateDidDissmiss;
+        weak_self.state = WCAlertControllerStateDidDissmiss;
 
-        [self allowUserInteractionEvents:YES];
+        [weak_self allowUserInteractionEvents:YES];
 
         // disconnect alertController with standOnViewController
-        self.contentViewController.standOnViewController.alertController = nil;
+        weak_self.contentViewController.standOnViewController.alertController = nil;
     }];
 }
 

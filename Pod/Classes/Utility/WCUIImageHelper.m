@@ -37,7 +37,7 @@
         }
 
         case WCImageBlurStyleDark: {
-            UIColor *darkColor = [UIColor colorWithWhite:0.11 alpha:0.73];
+            UIColor *darkColor = [UIColor colorWithWhite:0.31 alpha:0.73];
             return [self blurredImageWithImage:image tintColor:tintColor maskColor:darkColor];
 
             break;
