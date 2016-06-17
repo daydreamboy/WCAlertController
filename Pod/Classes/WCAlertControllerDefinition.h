@@ -49,4 +49,9 @@ typedef NS_ENUM(NSUInteger, WCAlertAnimationStyle) {
     WCAlertAnimationStyleCustom,
 };
 
-
+typedef NS_ENUM(NSUInteger, WCAlertBlurStyle) {
+    WCAlertBlurStyleOriginal,
+    WCAlertBlurStyleLight,
+    WCAlertBlurStyleExtraLight,
+    WCAlertBlurStyleDark,
+};

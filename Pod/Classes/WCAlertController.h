@@ -49,7 +49,7 @@
  *  Default is NO
  */
 @property (nonatomic, assign) BOOL maskViewBlurred;
-
+@property (nonatomic, assign) WCAlertBlurStyle maskViewBlurStyle;
 
 #pragma mark Animation properties
 

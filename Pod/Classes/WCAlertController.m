@@ -123,7 +123,7 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
 
         if (_maskViewBlurred) {
             UIImage *snapshot = [[UIApplication sharedApplication].keyWindow captureScreenshot];
-            _blurredImage = [WCUIImageHelper blurredImageWithImage:snapshot imageBlurStyle:WCImageBlurStyleOriginal];
+            _blurredImage = [WCUIImageHelper blurredImageWithImage:snapshot imageBlurStyle:(WCImageBlurStyle)self.maskViewBlurStyle];
         }
         else {
             _blurredImage = nil;
@@ -258,6 +258,7 @@ typedef NS_ENUM (NSUInteger, WCAlertControllerState) {
 
     // use WCAlertAnimationStyleSystem by default
     self.animationStyle = WCAlertAnimationStyleSystem;
+    self.maskViewBlurStyle = WCAlertBlurStyleOriginal;
 
     _state = WCAlertControllerStateInitialized;
 

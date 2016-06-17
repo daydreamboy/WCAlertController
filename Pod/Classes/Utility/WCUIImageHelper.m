@@ -25,22 +25,16 @@
         case WCImageBlurStyleLight: {
             UIColor *ligthColor = [UIColor colorWithWhite:1.0 alpha:0.3];
             return [self blurredImageWithImage:image tintColor:tintColor maskColor:ligthColor];
-
-            break;
         }
 
         case WCImageBlurStyleExtraLight: {
             UIColor *extraLigthColor = [UIColor colorWithWhite:0.97 alpha:0.82];
             return [self blurredImageWithImage:image tintColor:tintColor maskColor:extraLigthColor];
-
-            break;
         }
 
         case WCImageBlurStyleDark: {
             UIColor *darkColor = [UIColor colorWithWhite:0.31 alpha:0.73];
             return [self blurredImageWithImage:image tintColor:tintColor maskColor:darkColor];
-
-            break;
         }
     }
 }
